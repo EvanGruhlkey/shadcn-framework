@@ -1,0 +1,27 @@
+{
+  "$schema": "../../packages/patterns/schemas/site-manifest.schema.json",
+  "corpus": "yc-devtools",
+  "summary": "Developer-tools companies with public marketing sites. Used to study CLIs, frameworks, infrastructure tools, and developer-facing APIs.",
+  "category": "developer-tools",
+  "policy": {
+    "respect_robots_txt": true,
+    "max_requests_per_domain_per_minute": 15,
+    "store_html": false,
+    "store_assets": false
+  },
+  "viewports": ["desktop", "tablet", "mobile"],
+  "sites": [
+    {
+      "host": "example-jobs.dev",
+      "url": "https://example-jobs.dev/",
+      "tags": ["background-jobs", "queues"],
+      "notes": "Placeholder entry — replace with a real public URL before running capture."
+    },
+    {
+      "host": "example-cli.io",
+      "url": "https://example-cli.io/",
+      "tags": ["cli", "developer-experience"],
+      "notes": "Placeholder entry — replace with a real public URL before running capture."
+    }
+  ]
+}

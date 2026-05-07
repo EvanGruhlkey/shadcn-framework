@@ -1,0 +1,154 @@
+{
+  "$schema": "../packages/patterns/schemas/pattern-atlas.schema.json",
+  "category": "usage-based-saas",
+  "summary": "Marketing surfaces for API, infrastructure, and metered SaaS where pricing is a function of consumption. The page must legibly answer 'what does this cost at my volume?' before the bottom of the page.",
+  "density_profile": "dense",
+  "recommended_order": [
+    "nav",
+    "hero",
+    "proof-logos",
+    "feature-system",
+    "feature-deep-dive",
+    "pricing",
+    "metrics",
+    "conversion",
+    "faq",
+    "footer"
+  ],
+  "patterns": [
+    {
+      "id": "hero/api-snippet-and-meter",
+      "role": "hero",
+      "name": "API snippet with meter aside",
+      "summary": "Hero with copy on the left and a paired code snippet plus a small visualization of the metered unit (requests, tokens, GB) on the right.",
+      "prevalence": 0.41,
+      "domains_seen": 12,
+      "composition": "split-media",
+      "density": "balanced",
+      "variants": [
+        { "id": "snippet-on-top", "summary": "Snippet on top of the meter visualization." },
+        { "id": "side-by-side", "summary": "Snippet and meter side by side in the right column." }
+      ],
+      "block_ref": "hero/HeroSplitCode.tsx",
+      "anti_examples": []
+    },
+    {
+      "id": "feature-system/three-pillar-tech",
+      "role": "feature-system",
+      "name": "Three-pillar technical brief",
+      "summary": "Three feature cards anchored on technical primitives (e.g. 'Latency', 'Reliability', 'Observability'). Each card has a small chart or sparkline as its media element.",
+      "prevalence": 0.46,
+      "domains_seen": 13,
+      "composition": "grid-3",
+      "density": "balanced",
+      "variants": [
+        { "id": "with-sparkline", "summary": "Each card includes an inline sparkline." },
+        { "id": "icon-only", "summary": "Each card uses an icon instead of a sparkline." }
+      ],
+      "block_ref": "feature-systems/FeatureGridThree.tsx",
+      "anti_examples": []
+    },
+    {
+      "id": "feature-deep-dive/architecture-diagram",
+      "role": "feature-deep-dive",
+      "name": "Architecture diagram block",
+      "summary": "A labeled diagram showing how the product fits into the buyer's stack. 4–8 nodes, no more. Labels are short noun phrases.",
+      "prevalence": 0.38,
+      "domains_seen": 12,
+      "composition": "single-column",
+      "density": "balanced",
+      "variants": [
+        { "id": "left-to-right", "summary": "Linear left-to-right with a single arrow flow." },
+        { "id": "stacked-layers", "summary": "Vertical layered stack from data plane to application." }
+      ],
+      "block_ref": null,
+      "anti_examples": [
+        "Marketing-grade illustrations without labels are excluded."
+      ]
+    },
+    {
+      "id": "pricing/usage-calculator",
+      "role": "pricing",
+      "name": "Usage calculator",
+      "summary": "An interactive widget where the visitor selects a volume (slider or input) and the page computes a transparent monthly estimate based on a published rate card.",
+      "prevalence": 0.42,
+      "domains_seen": 12,
+      "composition": "single-column",
+      "density": "balanced",
+      "variants": [
+        { "id": "single-meter", "summary": "One input maps to one meter (e.g. requests/month)." },
+        { "id": "multi-meter", "summary": "Multiple inputs (compute, storage, egress) compose into a total." }
+      ],
+      "block_ref": "pricing/UsageCalculator.tsx",
+      "anti_examples": [
+        "A pricing page with only static tiers is pricing/contact-tier-table; this pattern requires interactive volume."
+      ]
+    },
+    {
+      "id": "pricing/transparent-rate-card",
+      "role": "pricing",
+      "name": "Transparent rate card",
+      "summary": "A small table listing each metered unit and its per-unit price. Adjacent to the calculator. Footnotes name volume discounts and committed-use plans.",
+      "prevalence": 0.36,
+      "domains_seen": 11,
+      "composition": "single-column",
+      "density": "dense",
+      "variants": [
+        { "id": "single-unit", "summary": "One row per resource, one rate." },
+        { "id": "tiered-rates", "summary": "Each resource has volume-tiered rates." }
+      ],
+      "block_ref": null,
+      "anti_examples": []
+    },
+    {
+      "id": "metrics/availability-strip",
+      "role": "metrics",
+      "name": "Availability and scale strip",
+      "summary": "A row of 3–4 numbers describing platform-level scale (regions, uptime, average request latency) with explicit units.",
+      "prevalence": 0.29,
+      "domains_seen": 10,
+      "composition": "card-row",
+      "density": "thin",
+      "variants": [
+        { "id": "with-status-link", "summary": "Each metric has a 'see status' affordance to a public status page." },
+        { "id": "plain", "summary": "No links." }
+      ],
+      "block_ref": null,
+      "anti_examples": []
+    },
+    {
+      "id": "faq/billing-faq",
+      "role": "faq",
+      "name": "Billing-focused FAQ",
+      "summary": "An accordion of 5–8 questions all narrowly focused on pricing edge cases — overage, free tier, refunds, currency, taxes.",
+      "prevalence": 0.34,
+      "domains_seen": 11,
+      "composition": "single-column",
+      "density": "balanced",
+      "variants": [
+        { "id": "one-column", "summary": "Single column accordion." },
+        { "id": "two-column-static", "summary": "Two-column static Q/A grid, no expand-collapse." }
+      ],
+      "block_ref": null,
+      "anti_examples": [
+        "General product FAQs belong in faq/product-faq."
+      ]
+    },
+    {
+      "id": "conversion/sandbox-cta",
+      "role": "conversion",
+      "name": "Sandbox CTA",
+      "summary": "Conversion band offering a free sandbox or playground without sign-up. Primary CTA opens the sandbox; secondary links to docs.",
+      "prevalence": 0.48,
+      "domains_seen": 13,
+      "composition": "single-column",
+      "density": "thin",
+      "variants": [
+        { "id": "centered", "summary": "Centered heading and stacked CTAs." },
+        { "id": "asymmetric", "summary": "Left-aligned heading, CTAs on the right." }
+      ],
+      "block_ref": "conversion/ConversionBand.tsx",
+      "anti_examples": []
+    }
+  ]
+}

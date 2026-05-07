@@ -1,0 +1,159 @@
+{
+  "$schema": "../packages/patterns/schemas/pattern-atlas.schema.json",
+  "category": "developer-tools",
+  "summary": "Marketing surfaces for CLIs, libraries, infrastructure tools, and developer-facing APIs. Audience is technical, scanning for proof of correctness and integration depth before clicking 'Read the docs'.",
+  "density_profile": "dense",
+  "recommended_order": [
+    "nav",
+    "hero",
+    "proof-logos",
+    "feature-system",
+    "feature-deep-dive",
+    "integrations",
+    "metrics",
+    "conversion",
+    "footer"
+  ],
+  "patterns": [
+    {
+      "id": "hero/split-code-right",
+      "role": "hero",
+      "name": "Hero with code panel",
+      "summary": "Single-column copy on the left and a syntax-highlighted code block on the right. The code block is the dominant proof artifact, not a screenshot.",
+      "prevalence": 0.62,
+      "domains_seen": 18,
+      "composition": "split-media",
+      "density": "balanced",
+      "variants": [
+        { "id": "terminal-output", "summary": "Right pane is a terminal frame with prompt + output, mono font, dark background." },
+        { "id": "annotated-snippet", "summary": "Right pane is a code block with inline callouts pointing at a key line." },
+        { "id": "tabbed-languages", "summary": "Right pane is a tab bar across 2–4 languages, same example translated." }
+      ],
+      "block_ref": "hero/HeroSplitCode.tsx",
+      "anti_examples": [
+        "Not a hero with a product screenshot mockup — that is hero/split-mockup-right.",
+        "Not an animated terminal demo — that is hero/animated-terminal."
+      ]
+    },
+    {
+      "id": "hero/animated-terminal",
+      "role": "hero",
+      "name": "Animated terminal hero",
+      "summary": "Centered or right-side terminal that types out a single representative command. Used when install-ability is the headline value.",
+      "prevalence": 0.18,
+      "domains_seen": 7,
+      "composition": "split-media",
+      "density": "thin",
+      "variants": [
+        { "id": "single-command", "summary": "One install or run command, paused once typed." },
+        { "id": "command-with-output", "summary": "Command then a 3–5 line representative output." }
+      ],
+      "block_ref": null,
+      "anti_examples": [
+        "Static code panels are hero/split-code-right, not this pattern."
+      ]
+    },
+    {
+      "id": "proof-logos/logo-strip-mono",
+      "role": "proof-logos",
+      "name": "Monochrome logo strip",
+      "summary": "A single horizontal row of 5–8 customer or community logos rendered in a flat monochrome treatment, sitting directly under the hero.",
+      "prevalence": 0.71,
+      "domains_seen": 22,
+      "composition": "card-row",
+      "density": "thin",
+      "variants": [
+        { "id": "static-row", "summary": "Static row, no animation." },
+        { "id": "marquee", "summary": "Slow horizontal marquee, paused on hover." }
+      ],
+      "block_ref": "proof/LogoStripMono.tsx",
+      "anti_examples": [
+        "Color-saturated logo grids are intentionally excluded — they read as advertising rather than proof."
+      ]
+    },
+    {
+      "id": "feature-system/three-column-pillar",
+      "role": "feature-system",
+      "name": "Three-pillar feature grid",
+      "summary": "Three feature cards in a single row, each with a small icon, a short title, and a 1–2 sentence description. Anchored under a single value pillar heading.",
+      "prevalence": 0.55,
+      "domains_seen": 17,
+      "composition": "grid-3",
+      "density": "balanced",
+      "variants": [
+        { "id": "icon-top", "summary": "Icon above title and description." },
+        { "id": "icon-leading", "summary": "Icon to the left of a title-description stack." }
+      ],
+      "block_ref": "feature-systems/FeatureGridThree.tsx",
+      "anti_examples": [
+        "Four-up grids belong in feature-system/four-column-spec; the three-column pattern is taller and more declarative."
+      ]
+    },
+    {
+      "id": "feature-deep-dive/two-column-with-snippet",
+      "role": "feature-deep-dive",
+      "name": "Deep-dive with code aside",
+      "summary": "An extended explanation of a single feature, with a heading, 3–5 bullet points, and a code snippet anchored on the opposite side of the layout.",
+      "prevalence": 0.48,
+      "domains_seen": 15,
+      "composition": "split-media",
+      "density": "balanced",
+      "variants": [
+        { "id": "media-right", "summary": "Snippet right, copy left." },
+        { "id": "media-left", "summary": "Snippet left, copy right (used to alternate rhythm)." }
+      ],
+      "block_ref": "feature-systems/FeatureDeepDive.tsx",
+      "anti_examples": []
+    },
+    {
+      "id": "integrations/stamp-grid",
+      "role": "integrations",
+      "name": "Integration stamp grid",
+      "summary": "A 4–6 column grid of small framed icons representing third-party integrations. Each cell is a uniform pill or square; no copy beyond the name.",
+      "prevalence": 0.41,
+      "domains_seen": 13,
+      "composition": "grid-4",
+      "density": "dense",
+      "variants": [
+        { "id": "rounded-square", "summary": "Square cells with rounded corners and a hairline border." },
+        { "id": "pill", "summary": "Pill-shaped cells with the icon inline with the name." }
+      ],
+      "block_ref": null,
+      "anti_examples": []
+    },
+    {
+      "id": "metrics/perf-strip",
+      "role": "metrics",
+      "name": "Performance metric strip",
+      "summary": "A single row of 3–4 hero numbers with a short caption underneath each. Used for latency, throughput, or scale claims with explicit units.",
+      "prevalence": 0.34,
+      "domains_seen": 11,
+      "composition": "card-row",
+      "density": "thin",
+      "variants": [
+        { "id": "value-then-caption", "summary": "Large value on top, caption below." },
+        { "id": "value-with-delta", "summary": "Value with a small comparative delta or baseline note." }
+      ],
+      "block_ref": null,
+      "anti_examples": [
+        "Generic 'X% faster' claims without units are excluded; this pattern requires an explicit unit per metric."
+      ]
+    },
+    {
+      "id": "conversion/docs-and-cta-band",
+      "role": "conversion",
+      "name": "Docs-first conversion band",
+      "summary": "A single full-width section near the page bottom presenting two equally weighted CTAs: a primary 'Read the docs' link and a secondary 'Start free' or 'Install' action.",
+      "prevalence": 0.58,
+      "domains_seen": 19,
+      "composition": "single-column",
+      "density": "thin",
+      "variants": [
+        { "id": "centered-pair", "summary": "Centered heading with two side-by-side buttons." },
+        { "id": "left-aligned-with-aside", "summary": "Left-aligned heading and copy, buttons on the right edge." }
+      ],
+      "block_ref": "conversion/ConversionBand.tsx",
+      "anti_examples": []
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "../../packages/patterns/schemas/site-manifest.schema.json",
+  "corpus": "infra-tools",
+  "summary": "Cloud, observability, data, and platform-engineering vendors. Used to study architecture-diagram patterns, transparent rate cards, and availability strips.",
+  "category": "usage-based-saas",
+  "policy": {
+    "respect_robots_txt": true,
+    "max_requests_per_domain_per_minute": 15,
+    "store_html": false,
+    "store_assets": false
+  },
+  "viewports": ["desktop", "tablet", "mobile"],
+  "sites": [
+    {
+      "host": "example-infra-co.com",
+      "url": "https://example-infra-co.com/",
+      "tags": ["compute", "edge"],
+      "notes": "Placeholder entry — replace with a real public URL before running capture."
+    },
+    {
+      "host": "example-observability.io",
+      "url": "https://example-observability.io/",
+      "tags": ["observability", "telemetry"],
+      "notes": "Placeholder entry — replace with a real public URL before running capture."
+    }
+  ]
+}
