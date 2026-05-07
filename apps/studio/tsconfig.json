@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./*"],
+      "@framework/blocks": ["../../packages/blocks/index.ts"],
+      "@framework/blocks/*": ["../../packages/blocks/*"],
+      "@framework/patterns": ["../../packages/patterns/pattern-registry.ts"],
+      "@framework/patterns/*": ["../../packages/patterns/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../../packages/blocks/**/*.ts",
+    "../../packages/blocks/**/*.tsx",
+    "../../packages/patterns/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}
