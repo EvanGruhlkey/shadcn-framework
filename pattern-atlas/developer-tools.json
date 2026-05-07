@@ -9,6 +9,7 @@
     "proof-logos",
     "feature-system",
     "feature-deep-dive",
+    "proof-quotes",
     "integrations",
     "metrics",
     "conversion",
@@ -104,6 +105,24 @@
       ],
       "block_ref": "feature-systems/FeatureDeepDive.tsx",
       "anti_examples": []
+    },
+    {
+      "id": "proof-quotes/three-up-quote-cards",
+      "role": "proof-quotes",
+      "name": "Three quote cards",
+      "summary": "Three customer quote cards in a single row. Used by developer-tool sites to surface adoption signals without committing a full case-study section.",
+      "prevalence": 0.27,
+      "domains_seen": 9,
+      "composition": "grid-3",
+      "density": "balanced",
+      "variants": [
+        { "id": "with-portrait", "summary": "Each card includes a circular portrait." },
+        { "id": "company-glyph", "summary": "Each card uses a small company glyph in place of a portrait." }
+      ],
+      "block_ref": "proof/QuoteCardsThree.tsx",
+      "anti_examples": [
+        "Single full-width testimonials are excluded from this pattern."
+      ]
     },
     {
       "id": "integrations/stamp-grid",
