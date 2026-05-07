@@ -1,0 +1,13 @@
+{
+  "name": "@framework/capture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./screenshot-site.ts",
+  "scripts": {
+    "capture": "tsx screenshot-site.ts"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
