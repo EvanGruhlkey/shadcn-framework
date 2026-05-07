@@ -23,7 +23,7 @@
 
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { chromium, type Browser, type Page } from "playwright";
 
@@ -294,11 +294,17 @@ function capturePath(corpus: string, host: string, viewport: string): string {
   return join(CAPTURES_DIR, corpus, `${host}.${viewport}.png`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   main().catch((err) => {
     console.error(err);
     process.exit(1);
   });
+}
+
+function isMainModule(metaUrl: string): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return metaUrl === pathToFileURL(entry).href;
 }
 
 export { capturePage, capturePath };

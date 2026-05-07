@@ -10,7 +10,7 @@
 
 import { readFileSync, readdirSync } from "node:fs";
 import { join, basename, dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
   isComposition,
@@ -317,6 +317,12 @@ function main(): void {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   main();
+}
+
+function isMainModule(metaUrl: string): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return metaUrl === pathToFileURL(entry).href;
 }

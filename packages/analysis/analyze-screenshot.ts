@@ -22,7 +22,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join, resolve, basename } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { classifySections } from "./classify-sections.js";
 import { normalizeObservation, ObservationError } from "./extract-layout-tree.js";
@@ -247,11 +247,17 @@ async function main(): Promise<void> {
   );
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   main().catch((err) => {
     console.error(err);
     process.exit(1);
   });
+}
+
+function isMainModule(metaUrl: string): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return metaUrl === pathToFileURL(entry).href;
 }
 
 export type { LayoutObservation };

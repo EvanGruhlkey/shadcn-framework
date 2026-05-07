@@ -18,7 +18,7 @@
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { chromium, type Browser } from "playwright";
 
@@ -343,11 +343,24 @@ function makeRunId(startedAt: string, name: string | undefined): string {
   return name ? `${stamp}-${name}` : stamp;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   main().catch((err) => {
     console.error(err);
     process.exit(1);
   });
+}
+
+/**
+ * Cross-platform entry-point check. On Windows, `process.argv[1]` is a
+ * backslash path while `import.meta.url` is a proper file URL, so the
+ * naive `file://${argv[1]}` template literal never matches and the
+ * script silently exits. `pathToFileURL` produces the encoded URL form
+ * on every platform.
+ */
+function isMainModule(metaUrl: string): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return metaUrl === pathToFileURL(entry).href;
 }
 
 export { main };

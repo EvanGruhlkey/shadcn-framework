@@ -11,7 +11,7 @@
  */
 
 import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { loadAtlas } from "../patterns/pattern-registry.js";
 import type { PageEvaluation } from "../patterns/schemas/pattern-types.js";
@@ -80,13 +80,19 @@ function printReport(report: PageEvaluation): void {
   console.log(JSON.stringify(report, null, 2));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   try {
     main();
   } catch (err) {
     console.error((err as Error).message);
     process.exit(1);
   }
+}
+
+function isMainModule(metaUrl: string): boolean {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return metaUrl === pathToFileURL(entry).href;
 }
 
 export { parsePage, checkCoherence, checkCloneRisk, checkResponsiveness };
