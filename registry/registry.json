@@ -1,0 +1,191 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "shadcn-ui-framework",
+  "homepage": "https://github.com/shadcn-ui-framework",
+  "description": "Original shadcn/ui blocks emitted by the shadcn-ui-framework pattern atlas.",
+  "items": [
+    {
+      "name": "site-nav",
+      "type": "registry:block",
+      "title": "Site navigation",
+      "description": "Sticky primary nav anchored by a wordmark, with a single primary CTA and an optional ghost CTA.",
+      "files": [
+        {
+          "path": "packages/blocks/navigation/SiteNav.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/navigation/site-nav.tsx"
+        }
+      ],
+      "categories": ["navigation"]
+    },
+    {
+      "name": "hero-split-code",
+      "type": "registry:block",
+      "title": "Hero with code panel",
+      "description": "Split layout with copy on the left and a syntax-shaped code panel on the right. Implements the developer-tools hero/split-code-right pattern.",
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "packages/blocks/hero/HeroSplitCode.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/hero/hero-split-code.tsx"
+        }
+      ],
+      "categories": ["hero", "developer-tools"]
+    },
+    {
+      "name": "hero-agent-demo",
+      "type": "registry:block",
+      "title": "Hero with agent transcript",
+      "description": "Split hero anchored by a static agent transcript. Implements the ai-agent-saas hero/agent-demo-box pattern.",
+      "files": [
+        {
+          "path": "packages/blocks/hero/HeroAgentDemo.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/hero/hero-agent-demo.tsx"
+        }
+      ],
+      "categories": ["hero", "ai-agent-saas"]
+    },
+    {
+      "name": "hero-enterprise-split",
+      "type": "registry:block",
+      "title": "Enterprise outcome hero",
+      "description": "Outcome headline with a Tailwind-built dashboard placeholder. Implements the enterprise-b2b hero/talk-to-sales-headline pattern.",
+      "files": [
+        {
+          "path": "packages/blocks/hero/HeroEnterpriseSplit.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/hero/hero-enterprise-split.tsx"
+        }
+      ],
+      "categories": ["hero", "enterprise-b2b"]
+    },
+    {
+      "name": "logo-strip-mono",
+      "type": "registry:block",
+      "title": "Monochrome logo strip",
+      "description": "Caller-owned logo marks rendered as an accessible monochrome strip directly under a hero.",
+      "files": [
+        {
+          "path": "packages/blocks/proof/LogoStripMono.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/proof/logo-strip-mono.tsx"
+        }
+      ],
+      "categories": ["proof"]
+    },
+    {
+      "name": "quote-cards-three",
+      "type": "registry:block",
+      "title": "Three quote cards",
+      "description": "Three customer quote cards with figure / figcaption semantics, optional portrait or company glyph.",
+      "files": [
+        {
+          "path": "packages/blocks/proof/QuoteCardsThree.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/proof/quote-cards-three.tsx"
+        }
+      ],
+      "categories": ["proof"]
+    },
+    {
+      "name": "feature-grid-three",
+      "type": "registry:block",
+      "title": "Three-pillar feature grid",
+      "description": "Three feature cards anchored under a single value pillar. icon-top or icon-leading variants.",
+      "files": [
+        {
+          "path": "packages/blocks/feature-systems/FeatureGridThree.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/feature-systems/feature-grid-three.tsx"
+        }
+      ],
+      "categories": ["features"]
+    },
+    {
+      "name": "feature-grid-four",
+      "type": "registry:block",
+      "title": "Four-pillar platform overview",
+      "description": "Four-card platform overview with optional per-card 'Learn more' affordance.",
+      "files": [
+        {
+          "path": "packages/blocks/feature-systems/FeatureGridFour.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/feature-systems/feature-grid-four.tsx"
+        }
+      ],
+      "categories": ["features", "enterprise-b2b"]
+    },
+    {
+      "name": "feature-deep-dive",
+      "type": "registry:block",
+      "title": "Feature deep dive",
+      "description": "Extended single-feature explanation with a media aside (media-right or media-left).",
+      "files": [
+        {
+          "path": "packages/blocks/feature-systems/FeatureDeepDive.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/feature-systems/feature-deep-dive.tsx"
+        }
+      ],
+      "categories": ["features"]
+    },
+    {
+      "name": "use-case-role-grid",
+      "type": "registry:block",
+      "title": "Use-case role grid",
+      "description": "3–6 use-case cards titled by role or workflow. Implements the ai-agent-saas use-cases/role-card-grid pattern.",
+      "files": [
+        {
+          "path": "packages/blocks/feature-systems/UseCaseRoleGrid.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/feature-systems/use-case-role-grid.tsx"
+        }
+      ],
+      "categories": ["features", "ai-agent-saas"]
+    },
+    {
+      "name": "pricing-tier-table",
+      "type": "registry:block",
+      "title": "Tiered pricing table",
+      "description": "3–4 pricing tiers with fixed-amount or label-only prices and an optional emphasized tier.",
+      "files": [
+        {
+          "path": "packages/blocks/pricing/PricingTierTable.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/pricing/pricing-tier-table.tsx"
+        }
+      ],
+      "categories": ["pricing"]
+    },
+    {
+      "name": "usage-calculator",
+      "type": "registry:block",
+      "title": "Usage calculator",
+      "description": "Interactive single- or multi-meter calculator with a transparent line-item breakdown. Implements the usage-based-saas pricing/usage-calculator pattern.",
+      "files": [
+        {
+          "path": "packages/blocks/pricing/UsageCalculator.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/pricing/usage-calculator.tsx"
+        }
+      ],
+      "categories": ["pricing", "usage-based-saas"]
+    },
+    {
+      "name": "conversion-band",
+      "type": "registry:block",
+      "title": "Conversion band",
+      "description": "Centered or asymmetric full-width conversion band. Covers the conversion patterns across all four atlases.",
+      "files": [
+        {
+          "path": "packages/blocks/conversion/ConversionBand.tsx",
+          "type": "registry:block",
+          "target": "components/blocks/conversion/conversion-band.tsx"
+        }
+      ],
+      "categories": ["conversion"]
+    }
+  ]
+}
