@@ -1,0 +1,10 @@
+{
+  "name": "@framework/analysis",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./analyze-screenshot.ts",
+  "scripts": {
+    "analyze": "tsx analyze-screenshot.ts"
+  }
+}
