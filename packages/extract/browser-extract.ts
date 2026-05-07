@@ -21,6 +21,16 @@ export async function harvestTokens(
   url: string,
   viewport: { width: number; height: number },
 ): Promise<RawTokens> {
+  // tsx/esbuild transpiles nested function declarations with a `__name`
+  // helper for nicer stack traces. Playwright serializes the function to
+  // a string and evaluates it in the browser, where `__name` is
+  // undefined. Define it as an identity function before invoking the
+  // harvester so the wrapped declarations resolve cleanly.
+  await page.evaluate(() => {
+    const g = globalThis as unknown as { __name?: (fn: unknown) => unknown };
+    if (typeof g.__name === "undefined") g.__name = (fn: unknown) => fn;
+  });
+
   const partial = await page.evaluate(harvestInPage);
   return {
     url,
