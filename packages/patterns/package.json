@@ -1,0 +1,14 @@
+{
+  "name": "@framework/patterns",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./pattern-registry.ts",
+  "exports": {
+    ".": "./pattern-registry.ts",
+    "./schemas": "./schemas/pattern-types.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit"
+  }
+}
