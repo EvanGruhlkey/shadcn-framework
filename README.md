@@ -16,32 +16,92 @@ synthesizes an original design system you can use to build your own.
 
 ---
 
-## The headline command
+## Run from any folder (recommended)
+
+Use this when your **app lives somewhere else** — the design system is written to **`./output/<runId>/`** in whatever directory you run the command from (not inside the package).
+
+**One-time per machine** (Chromium for Playwright):
+
+```bash
+npx playwright install chromium
+```
+
+**Every time** you want a new theme from reference sites:
+
+```bash
+cd path/to/your-empty-or-app-folder
+npx shadcn-ui-framework@latest https://site-a.example https://site-b.example
+```
+
+*(Until the package is on the npm registry, install from this repo:  
+`npm install -g .` inside the cloned repo, then run `shadcn-ui-framework <urls…>` anywhere; or `npx file:../path/to/shadcn-ui-framework`.)*
+
+After it finishes, open **`output/<runId>/FOR_AI.md`** — it tells you exactly how to attach that folder in **Cursor** or **Claude Code** so the model follows your tokens when building UI.
+
+```txt
+output/<runId>/
+├── FOR_AI.md            ← paste / @-attach this for your AI (handoff instructions)
+├── tokens.json
+├── tailwind.config.ts
+├── globals.css
+├── theme-preview.tsx
+├── REPORT.md
+├── run.json
+├── screenshots/
+└── raw/
+```
+
+## Or run inside this repo (contributors)
 
 ```bash
 npm install
 npx playwright install chromium
+npm run extract -- https://site-a.example https://site-b.example
+```
+
+Same `./output/<runId>/` layout (relative to the repo root when you run here).
+
+---
+
+## Tell your AI to follow the output
+
+1. Run the command so **`output/<runId>/`** exists.
+2. Copy that folder into your Next.js project (e.g. `design-system/extract-20260507/`) **or** leave it next to your app and **attach the folder in chat**.
+3. In **Cursor**: `@` **FOR_AI.md** or the whole folder; paste the instruction block from **FOR_AI.md** into Composer.
+4. In **Claude Code**: attach the folder; same instruction block.
+
+The AI’s authority order is: **REPORT.md** → **tokens.json** → merge **tailwind.config.ts** / **globals.css** into the app — original copy only, no cloning reference sites.
+
+---
+
+## What the headline command does
+
+```bash
+npx shadcn-ui-framework https://site-a.example https://site-b.example https://site-c.example
+```
+
+That's it (after Playwright’s browser is installed once). Legacy / monorepo:
+
+```bash
 npm run extract -- https://site-a.example https://site-b.example https://site-c.example
 ```
 
-That's it. After it runs, look in `output/<runId>/`:
+<details>
+<summary>File listing (same for both)</summary>
 
 ```txt
-output/20260506-1953/
+output/<runId>/
 ├── tokens.json          # every value, machine-readable
 ├── tailwind.config.ts   # drop-in Tailwind theme
 ├── globals.css          # drop-in shadcn-compatible CSS variables
 ├── theme-preview.tsx    # render this to eyeball the system
+├── FOR_AI.md            # how to hand off to Cursor / Claude Code / any agent
 ├── REPORT.md            # what was extracted, from where, why
 ├── run.json             # full run metadata (sources, timing, status)
 ├── screenshots/         # the captured PNGs
 └── raw/                 # per-site raw token observations
 ```
-
-Drop `tailwind.config.ts` and `globals.css` into a fresh
-[shadcn/ui project](https://ui.shadcn.com/docs/installation/next) and you
-have an original design system inspired by the sites you picked — with
-none of their copy, layout, or brand assets attached.
+</details>
 
 ### What the extractor actually does
 
@@ -82,13 +142,19 @@ URLs ──▶ Playwright ──▶ raw tokens.json ──▶ synthesize ──�
 
 ### CLI reference
 
+| How to run | Command |
+| ---------- | ------- |
+| **Any folder** (after `npm publish` or `npm install -g .`) | `npx shadcn-ui-framework <url> [<url> …] [options]` |
+| **This repo** | `npm run extract -- <url> [<url> …] [options]` |
+
 ```bash
-npm run extract -- <url> [<url> ...] [options]
+npx shadcn-ui-framework https://example.com --name my-brand
+npm run extract -- https://example.com --name my-brand
 ```
 
 | Flag           | Default              | Notes                                      |
 | -------------- | -------------------- | ------------------------------------------ |
-| `--out <dir>`  | `output/<runId>`     | Override the output directory              |
+| `--out <dir>`  | `./output/<runId>` (under **current working directory**) | Absolute or relative path for the run folder     |
 | `--name <slug>`| _(unset)_            | Append a slug to the runId for findability |
 | `--no-robots`  | _(off)_              | Skip robots.txt check (not recommended)    |
 | `--rate <n>`   | `15`                 | Per-domain requests/minute                 |
@@ -136,7 +202,9 @@ shadcn-ui-framework/
 ### Other commands
 
 ```bash
-npm run extract        # ← the one you'll use 90% of the time
+npm run extract        # same CLI as npx shadcn-ui-framework; cwd = repo root
+npx shadcn-ui-framework <urls…>   # from any folder, after global install or npm link
+
 npm run studio         # Next.js dashboard at localhost:3000
 npm run capture        # Lower-level Playwright capture pipeline
 npm run analyze        # Run section classifier on captured screenshots

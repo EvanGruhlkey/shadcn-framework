@@ -17,7 +17,7 @@
  */
 
 import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { chromium, type Browser } from "playwright";
@@ -29,8 +29,8 @@ import type { ExtractionRun, RawTokens, SiteCapture } from "./types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const REPO_ROOT = resolve(__dirname, "..", "..");
-const DEFAULT_OUTPUT_ROOT = resolve(REPO_ROOT, "output");
+/** Writes under the user's cwd so `npx shadcn-ui-framework` from any folder works. */
+const DEFAULT_OUTPUT_ROOT = join(process.cwd(), "output");
 
 const USER_AGENT =
   "shadcn-ui-framework/0.1 (+https://github.com/shadcn-ui-framework; design-token research; respects robots.txt)";
@@ -83,7 +83,12 @@ function parseArgs(argv: string[]): CliArgs {
 function printHelp(): void {
   console.log(
     [
-      "Usage: npm run extract -- <url> [<url> ...] [options]",
+      "Usage:",
+      "  npx shadcn-ui-framework <url> [<url> ...] [options]   (from any folder)",
+      "  npm run extract -- <url> [<url> ...] [options]       (from this repo)",
+      "",
+      "Writes to ./output/<runId>/ in your current working directory unless",
+      "you pass --out.",
       "",
       "Captures each URL at a desktop viewport, harvests computed design",
       "tokens (colors, type, spacing, radius, shadow), and synthesizes a",
@@ -336,6 +341,7 @@ async function main(): Promise<void> {
   console.log(`  → ${join(outDir, "run.json")}`);
   console.log("");
   console.log(`[extract] done. Open ${join(outDir, "REPORT.md")} for the summary.`);
+  console.log(`[extract] Give your AI: ${join(outDir, "FOR_AI.md")}`);
 }
 
 function makeRunId(startedAt: string, name: string | undefined): string {

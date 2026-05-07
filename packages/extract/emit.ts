@@ -27,6 +27,7 @@ export function emitAll(system: DesignSystem, run: ExtractionRun): string[] {
   written.push(write(run.outputDir, "globals.css", emitGlobalsCss(system)));
   written.push(write(run.outputDir, "theme-preview.tsx", emitThemePreview(system)));
   written.push(write(run.outputDir, "REPORT.md", emitReport(system, run)));
+  written.push(write(run.outputDir, "FOR_AI.md", emitForAi(system, run)));
 
   return written;
 }
@@ -384,6 +385,48 @@ inspired by the corpus.
 
 If a source operator requests removal, delete the screenshot, drop the URL
 from the manifest, and re-run the extraction.
+`;
+}
+
+/**
+ * Copy-paste handoff for Cursor / Claude Code / any agent.
+ */
+function emitForAi(system: DesignSystem, run: ExtractionRun): string {
+  const abs = run.outputDir.replace(/\\/g, "/");
+  return `# Hand this folder to your AI (Cursor, Claude Code, etc.)
+
+**Run:** \`${system.runId}\`  
+**Absolute path:** \`${abs}\`
+
+## What to attach
+
+In **Cursor**: \`@\` this folder or add \`FOR_AI.md\`, \`REPORT.md\`, and \`tokens.json\` to context.  
+In **Claude Code**: attach the whole \`output/${system.runId}/\` directory (or copy it into your app repo).
+
+## Authority order
+
+1. **REPORT.md** — typography scale, spacing, radii, colors, container width, notes.
+2. **tokens.json** — the same system as structured JSON.
+3. **tailwind.config.ts** + **globals.css** — drop these into a Next.js + Tailwind + shadcn-style app.
+
+## Instruction block (paste into chat)
+
+\`\`\`text
+You must follow the design system in the attached \`output/${system.runId}/\` folder.
+
+- Read REPORT.md and tokens.json before writing any UI.
+- Merge tailwind.config.ts and globals.css into my project (preserve my existing content paths unless I say otherwise).
+- Style with semantic tokens only: bg-background, text-foreground, text-muted-foreground, border-border, bg-primary, text-primary-foreground, bg-card, text-card-foreground, etc. No ad-hoc hex colors.
+- Use the font families and type steps from REPORT.md; load web fonts if needed.
+- Build a landing page for MY product (I will describe below). Sections: nav, hero, proof strip, features, pricing or CTA, footer. Original copy only — do not copy text from any reference site.
+
+My product: [describe your idea, audience, and primary CTA here]
+\`\`\`
+
+## After the agent runs
+
+- Compare against **theme-preview.tsx** (optional route) to see if components match the token intent.
+- Iterate in the same chat; keep REPORT.md in context for every change.
 `;
 }
 

@@ -1,9 +1,25 @@
 {
   "name": "shadcn-ui-framework",
   "version": "0.1.0",
-  "private": true,
-  "description": "A research-oriented shadcn/ui framework for extracting SaaS interface patterns and generating original AI-assisted websites.",
+  "description": "Extract a shadcn-compatible design system from public sites, then build UI in Cursor or any AI — outputs tokens, Tailwind theme, and FOR_AI.md handoff.",
   "license": "MIT",
+  "keywords": [
+    "shadcn",
+    "tailwind",
+    "design-system",
+    "playwright",
+    "cursor",
+    "ai"
+  ],
+  "bin": {
+    "shadcn-ui-framework": "./bin/shadcn-ui-framework.mjs"
+  },
+  "files": [
+    "bin",
+    "packages/extract",
+    "README.md",
+    "LICENSE"
+  ],
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -19,11 +35,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "format:check": "prettier --check ."
   },
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "tsx": "^4.19.0"
+  },
   "devDependencies": {
     "@types/node": "^22.7.0",
-    "playwright": "^1.48.0",
     "prettier": "^3.3.3",
-    "tsx": "^4.19.0",
     "typescript": "^5.6.0"
   },
   "engines": {
