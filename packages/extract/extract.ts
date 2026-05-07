@@ -29,11 +29,11 @@ import type { ExtractionRun, RawTokens, SiteCapture } from "./types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-/** Writes under the user's cwd so `npx shadcn-ui-framework` from any folder works. */
+/** Writes under the user's cwd so `npx launchframe` from any folder works. */
 const DEFAULT_OUTPUT_ROOT = join(process.cwd(), "output");
 
 const USER_AGENT =
-  "shadcn-ui-framework/0.1 (+https://github.com/shadcn-ui-framework; design-token research; respects robots.txt)";
+  "launchframe/0.1 (+https://github.com/evangruhlkey/launchframe; design-token research; respects robots.txt)";
 
 interface CliArgs {
   urls: string[];
@@ -84,8 +84,8 @@ function printHelp(): void {
   console.log(
     [
       "Usage:",
-      "  npx shadcn-ui-framework <url> [<url> ...] [options]   (from any folder)",
-      "  npm run extract -- <url> [<url> ...] [options]       (from this repo)",
+      "  npx launchframe <url> [<url> ...] [options]      (from any folder)",
+      "  npm run extract -- <url> [<url> ...] [options]   (from this repo)",
       "",
       "Writes to ./output/<runId>/ in your current working directory unless",
       "you pass --out.",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CLI entry for `npx shadcn-ui-framework` / `npm exec shadcn-ui-framework`.
+ * CLI entry for `npx launchframe` / `npm exec launchframe`.
  * Spawns the TypeScript extract pipeline with the same Node that installed
  * this package. Output defaults to `./output/<runId>/` in the *current*
  * working directory (where the user ran the command), not inside the
@@ -25,7 +25,7 @@ try {
   tsxCli = join(dirname(tsxPkg), "dist", "cli.mjs");
 } catch {
   console.error(
-    "shadcn-ui-framework: could not resolve the `tsx` runtime. Re-install: npm install -g shadcn-ui-framework",
+    "launchframe: could not resolve the `tsx` runtime. Re-install: npm install -g launchframe",
   );
   process.exit(1);
 }

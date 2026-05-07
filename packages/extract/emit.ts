@@ -44,7 +44,7 @@ function write(dir: string, file: string, contents: string): string {
 
 function emitTailwindConfig(system: DesignSystem): string {
   return `/**
- * Tailwind theme extracted by shadcn-ui-framework.
+ * Tailwind theme extracted by launchframe.
  * Run id: ${system.runId}
  *
  * Sources (inspirational only, no source code or assets reused):
@@ -126,7 +126,7 @@ function heightFor(step: string, system: DesignSystem): string {
 
 function emitGlobalsCss(system: DesignSystem): string {
   return `/**
- * Drop-in CSS variables produced by shadcn-ui-framework.
+ * Drop-in CSS variables produced by launchframe.
  * Compatible with shadcn/ui's --background / --foreground / etc. tokens.
  */
 
