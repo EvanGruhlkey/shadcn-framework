@@ -7,13 +7,15 @@
     "noEmit": true,
     "incremental": true,
     "plugins": [{ "name": "next" }],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
       "@framework/blocks": ["../../packages/blocks/index.ts"],
       "@framework/blocks/*": ["../../packages/blocks/*"],
       "@framework/patterns": ["../../packages/patterns/pattern-registry.ts"],
       "@framework/patterns/*": ["../../packages/patterns/*"]
-    }
+    },
+    "allowJs": true
   },
   "include": [
     "next-env.d.ts",
@@ -24,5 +26,7 @@
     "../../packages/blocks/**/*.tsx",
     "../../packages/patterns/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
