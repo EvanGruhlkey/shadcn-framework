@@ -33,6 +33,9 @@ datasets/captures/**/*.webp
 datasets/observations/**/*.json
 !datasets/observations/.gitkeep
 
+# extraction runs (one folder per `npm run extract` invocation)
+output/
+
 # editor / OS
 .DS_Store
 Thumbs.db

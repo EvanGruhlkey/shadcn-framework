@@ -9,6 +9,7 @@
     "packages/*"
   ],
   "scripts": {
+    "extract": "tsx packages/extract/extract.ts",
     "studio": "npm run dev --workspace apps/studio",
     "studio:build": "npm run build --workspace apps/studio",
     "capture": "tsx packages/capture/screenshot-site.ts",

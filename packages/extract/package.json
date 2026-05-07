@@ -1,0 +1,13 @@
+{
+  "name": "@framework/extract",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./extract.ts",
+  "scripts": {
+    "extract": "tsx extract.ts"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
