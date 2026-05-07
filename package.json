@@ -1,0 +1,31 @@
+{
+  "name": "shadcn-ui-framework",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A research-oriented shadcn/ui framework for extracting SaaS interface patterns and generating original AI-assisted websites.",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "studio": "npm run dev --workspace apps/studio",
+    "studio:build": "npm run build --workspace apps/studio",
+    "capture": "tsx packages/capture/screenshot-site.ts",
+    "analyze": "tsx packages/analysis/analyze-screenshot.ts",
+    "formalize": "tsx packages/patterns/pattern-registry.ts",
+    "evaluate": "tsx packages/evaluation/evaluate-page.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "playwright": "^1.48.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
