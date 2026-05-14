@@ -60,10 +60,7 @@ export function UseCaseRoleGrid({
             <Card className="h-full p-6">
               <div className="flex items-center gap-3">
                 {r.glyph ? (
-                  <span
-                    aria-hidden="true"
-                    className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-md border border-border bg-muted/40 text-foreground/70"
-                  >
+                  <span aria-hidden="true" className="ds-icon-tile h-8 w-8">
                     <span className="h-4 w-4">{r.glyph}</span>
                   </span>
                 ) : null}

@@ -53,6 +53,12 @@ export default function HomePage() {
               >
                 Open the block gallery →
               </Link>
+              <Link
+                href="/showcase/permitbench"
+                className="inline-flex h-11 items-center justify-center rounded-md border border-border bg-background px-6 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                Rich landing example →
+              </Link>
             </div>
           </div>
 

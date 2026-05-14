@@ -62,7 +62,7 @@ export function FeatureGridThree({
             <span
               aria-hidden="true"
               className={cn(
-                "flex flex-none items-center justify-center rounded-md border border-border bg-muted/40 text-foreground/70",
+                "ds-icon-tile flex-none",
                 variant === "icon-leading" ? "h-10 w-10 px-1" : "h-11 w-11 px-1.5",
               )}
             >

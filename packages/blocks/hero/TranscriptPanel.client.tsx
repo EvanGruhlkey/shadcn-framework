@@ -8,15 +8,18 @@
 import { motion, useReducedMotion } from "framer-motion";
 
 import { cn } from "../_lib/cn.js";
+import { MEDIA_FRAME_CLASS } from "../_lib/media-frame.js";
+import { DS_MOTION_DURATION, DS_MOTION_EASE } from "../_lib/motion-tokens.js";
 
 import type { AgentTurn } from "./agent-types.js";
-
-const PANEL_EASE = [0.22, 1, 0.36, 1] as const;
 
 const listVariants = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.05, delayChildren: 0.04 },
+    transition: {
+      staggerChildren: DS_MOTION_DURATION.stagger,
+      delayChildren: 0.04,
+    },
   },
 };
 
@@ -25,7 +28,7 @@ const itemVariants = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.2, ease: PANEL_EASE },
+    transition: { duration: DS_MOTION_DURATION.subtle, ease: DS_MOTION_EASE },
   },
 };
 
@@ -82,7 +85,7 @@ export function TranscriptPanel({
       <figure
         aria-label="Example agent transcript"
         className={cn(
-          "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
+          MEDIA_FRAME_CLASS,
           motionMode === "subtle" &&
             "motion-safe:animate-[fadeIn_220ms_ease-out_both] motion-reduce:animate-none",
         )}
@@ -102,10 +105,10 @@ export function TranscriptPanel({
   return (
     <motion.figure
       aria-label="Example agent transcript"
-      className="overflow-hidden rounded-lg border border-border bg-card shadow-sm"
+      className={MEDIA_FRAME_CLASS}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22, ease: PANEL_EASE }}
+      transition={{ duration: DS_MOTION_DURATION.panel, ease: DS_MOTION_EASE }}
     >
       <TranscriptHeader />
       <motion.ol className="divide-y divide-border" variants={listVariants} initial="hidden" animate="show">

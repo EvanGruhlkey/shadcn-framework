@@ -15,6 +15,7 @@ import {
   type AnchorHTMLAttributes,
   type ButtonHTMLAttributes,
   type HTMLAttributes,
+  type MouseEvent,
   type ReactNode,
 } from "react";
 
@@ -64,15 +65,14 @@ Button.displayName = "Button";
  * `<button>` otherwise. Use this in marketing blocks; reserve `<Button>`
  * for purely interactive controls (e.g. modals, form submission).
  */
-export interface ActionProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "type"> {
+export type ActionProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "type" | "onClick"> & {
   href?: string;
   variant?: Variant;
   size?: Size;
   type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
-  onClick?: ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
+  onClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
   disabled?: boolean;
-}
+};
 
 export function Action({
   href,

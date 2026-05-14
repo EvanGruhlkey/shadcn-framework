@@ -56,3 +56,7 @@ export type { ConversionBandProps } from "./conversion/ConversionBand.js";
 
 export { Action, Button, Card, Section, Eyebrow, buttonClass } from "./_lib/primitives.js";
 export { cn } from "./_lib/cn.js";
+export { MEDIA_FRAME_CLASS, MediaCaption, MediaFrame } from "./_lib/media-frame.js";
+export { DS_MOTION_DURATION, DS_MOTION_EASE } from "./_lib/motion-tokens.js";
+export { FadeUp, Stagger, StaggerItem } from "./_lib/marketing-motion.js";
+export * from "./_lib/marketing-icons.js";

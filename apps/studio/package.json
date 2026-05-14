@@ -20,6 +20,7 @@
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
+    "tailwindcss-animate": "^1.0.7",
     "@types/node": "^22.7.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

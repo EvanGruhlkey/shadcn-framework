@@ -54,10 +54,7 @@ export function FeatureGridFour({
             key={p.id}
             className="flex h-full flex-col rounded-lg border border-border bg-card p-6 transition-colors hover:bg-accent/30"
           >
-            <span
-              aria-hidden="true"
-              className="mb-5 flex h-10 w-10 items-center justify-center rounded-md border border-border bg-muted/40 text-foreground/70"
-            >
+            <span aria-hidden="true" className="ds-icon-tile mb-5 h-10 w-10">
               <span className="h-5 w-5">{p.icon}</span>
             </span>
             <h3 className="text-base font-semibold text-foreground">{p.title}</h3>

@@ -4,6 +4,10 @@ These rules govern every page, block, and asset produced by or with this
 framework. They are loaded by generation agents before composition begins
 and are checked by `packages/evaluation` after composition completes.
 
+For **media, Lucide icons, Framer Motion defaults, and shadcn composition**,
+also follow `rules/design-system.md` — it is the practical layer on top of
+these constraints.
+
 The rules are deliberately conservative. The framework optimizes for
 **polished restraint** over visual novelty.
 
@@ -57,11 +61,16 @@ The rules are deliberately conservative. The framework optimizes for
 - Generated pages may use:
   - Geometric shapes built from Tailwind utilities,
   - Stock photography under permissive licenses (e.g. Unsplash) **with
-    attribution metadata**,
+    attribution metadata** — frame with **`MediaFrame`** / **`MediaCaption`**
+    from `@framework/blocks` or the **`ds-media-frame`** / **`ds-media-caption`**
+    utilities (`rules/design-system.md` §2),
   - Mockup placeholders shipped under `apps/studio/public/mockups`,
   - **Integration marks** (small Slack, Discord, GitHub, etc. icons) placed
     next to copy that describes connecting to that product. Treat them as
     UI affordances, not as proof that those companies use your product.
+- **Lucide icons** — prefer the curated `@framework/blocks` marketing icon
+  re-export (`rules/design-system.md` §3) for feature tiles and lists instead
+  of anonymous inline SVGs.
 - Generated pages must not use:
   - Logos, illustrations, or product screenshots from any specific real
     company **as customer proof** (logo strips, testimonials, “trusted by”

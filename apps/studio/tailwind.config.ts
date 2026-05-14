@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Config = {
   darkMode: ["class"],
@@ -65,9 +66,12 @@ const config: Config = {
           to: { opacity: "1", transform: "translateY(0)" },
         },
       },
+      animation: {
+        "fade-in": "fadeIn 220ms ease-out both",
+      },
     },
   },
-  plugins: [],
+  plugins: [tailwindcssAnimate],
 };
 
 export default config;

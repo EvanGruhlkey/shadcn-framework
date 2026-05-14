@@ -30,9 +30,10 @@ and [Vercel’s Web Interface Guidelines](https://github.com/vercel-labs/web-int
 Before writing a single line of code, load and obey:
 
 1. `rules/design-rules.md`
-2. `rules/copywriting-rules.md`
-3. `rules/anti-clone-policy.md`
-4. `rules/accessibility-rules.md`
+2. `rules/design-system.md` — media framing, Lucide icons, Framer Motion, shadcn alignment
+3. `rules/copywriting-rules.md`
+4. `rules/anti-clone-policy.md`
+5. `rules/accessibility-rules.md`
 
 You then load **one** category file from `pattern-atlas/`:
 

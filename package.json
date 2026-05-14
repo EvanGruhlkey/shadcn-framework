@@ -1,6 +1,6 @@
 {
   "name": "launchframe",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Point Launchframe at SaaS sites you admire and get back a drop-in shadcn/ui design system (tokens, Tailwind theme, CSS variables, AI handoff) you can build your own UI on top of.",
   "license": "MIT",
   "author": "Evan Gruhlkey",

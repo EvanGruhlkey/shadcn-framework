@@ -9,7 +9,7 @@
 import type { ReactNode } from "react";
 
 import { Action, Eyebrow } from "../_lib/primitives.js";
-import { cn } from "../_lib/cn.js";
+import { MEDIA_FRAME_CLASS } from "../_lib/media-frame.js";
 
 export interface HeroEnterpriseSplitProps {
   eyebrow?: string;
@@ -84,13 +84,7 @@ export function HeroEnterpriseSplit({
 
 function PlaceholderDashboard() {
   return (
-    <figure
-      aria-hidden="true"
-      className={cn(
-        "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
-        "ring-1 ring-foreground/[0.03]",
-      )}
-    >
+    <figure aria-hidden="true" className={MEDIA_FRAME_CLASS}>
       <header className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-2.5">
         <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
         <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
