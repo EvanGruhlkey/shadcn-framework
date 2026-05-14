@@ -7,6 +7,13 @@ responsiveness/accessibility.
 
 The evaluation is run as part of `npm run evaluate` and gates the build.
 
+When judging **visual coherence**, use the same two-layer mindset as Google’s
+[DESIGN.md](https://github.com/google-labs-code/design.md): the page should
+read as if it had **consistent tokens** (color roles, type scale, spacing,
+radius, elevation) plus a **single clear story** for why those choices hang
+together. You are not linting a `DESIGN.md` file; you are checking whether the
+TSX behaves like a system that could have been described by one.
+
 ---
 
 ## Inputs
@@ -57,16 +64,28 @@ three checks pass.
 Evaluates the page against the design rules and the chosen atlas's
 `recommended_order`.
 
-Detect and report (each as a rule slug):
+Detect and report (each as a rule slug). Automated `npm run evaluate`
+implements the rules below; treat any additional critique as **manual** review
+unless you extend `packages/evaluation`.
 
-- `design.density.too-thin` — fewer than 5 sections.
-- `design.density.too-dense` — more than 8 sections.
-- `design.order.violation` — sections appear in an order incompatible with
+**Implemented (emit when applicable):**
+
+- `design.density.too-thin` — fewer than 5 content sections (nav/footer
+  excluded).
+- `design.density.too-dense` — more than 8 content sections.
+- `design.order.violation` — section roles are not a subsequence of
   `atlas.recommended_order`.
-- `design.duplicate-role` — two sections with the same role and no atlas
-  entry permitting it.
-- `design.cta.too-many` — more than 1 primary CTA above the fold.
-- `design.headings.skipped-level` — heading level skipped in source order.
+- `design.duplicate-role` — a role appears more than once where the atlas
+  does not allow it.
+- `design.headings.skipped-level` — heading level skipped in source order
+  (e.g. `h1` → `h3`).
+- `design.pattern.unknown` — `meta.patterns` references an id not present in
+  the atlas (warning).
+
+**DESIGN.md-aligned manual pass (no dedicated slug today):** one accent
+story, consistent radius/shadow language, typography ladder respected, and
+primary CTA clarity above the fold. Prefer filing concrete issues later as new
+rule slugs if you add checks in `packages/evaluation`.
 
 ## Clone-risk check
 
@@ -80,21 +99,32 @@ Detect and report:
 - `clone.copy.forbidden-phrase` — any forbidden phrase from
   `rules/copywriting-rules.md` §8 found in the rendered text.
 - `clone.brand.real-name` — any real-world product/company name found
-  outside an explicit user-supplied allowlist.
+  outside an explicit user-supplied allowlist (use when an LLM evaluator
+  runs with an allowlist; not emitted by the default `npm run evaluate`
+  script today).
+- `clone.observations.empty` — no observation JSON for this category (info:
+  structural and token similarity were not computed).
 
 ## Responsiveness check
 
-Static a11y and responsiveness pass:
+Static checks over TSX source (see `packages/evaluation/responsiveness-check.ts`).
+Emit when applicable:
 
-- `a11y.heading.multiple-h1`
-- `a11y.heading.skipped-level`
-- `a11y.image.missing-alt`
-- `a11y.form.label-association`
-- `a11y.contrast.insufficient`
-- `a11y.skip-link.missing`
-- `responsive.viewport.overflow` — any element with explicit pixel widths
-  exceeding the smallest supported viewport (375 px).
-- `responsive.touch-target.too-small` — interactive element below 44 px.
+- `a11y.heading.missing-h1` — no `<h1>` in the page source.
+- `a11y.heading.multiple-h1` — more than one `<h1>`.
+- `a11y.heading.skipped-level` — heading level jump > 1 between adjacent
+  headings in source order.
+- `a11y.image.missing-alt` — `<img>` without an `alt` attribute.
+- `a11y.button.empty` — `<button>` with no accessible inner content.
+- `a11y.skip-link.missing` — no skip link with `href="#main"` detected
+  (warning).
+- `design.color.hardcoded` — arbitrary color in a class like `text-[#fff]` or
+  `bg-[rgb(...)]` instead of theme variables (warning).
+- `responsive.viewport.overflow` — `w-[Npx]` with N > 375 in class strings.
+
+Contrast ratios, touch-target pixel sizes, and form label wiring require a
+browser or richer static analysis; call those out in studio or follow-up
+checks, not as deterministic `PageEvaluation` slugs unless you implement them.
 
 ---
 
