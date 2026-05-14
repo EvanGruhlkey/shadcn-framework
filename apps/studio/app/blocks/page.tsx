@@ -13,7 +13,7 @@ const FAMILIES = [
     name: "Hero",
     blocks: [
       { id: "hero/HeroSplitCode", summary: "Split layout with a code panel and optional language tabs." },
-      { id: "hero/HeroAgentDemo", summary: "Static agent transcript anchored in the right pane." },
+      { id: "hero/HeroAgentDemo", summary: "Agent transcript with optional Framer Motion stagger (motion=\"subtle\")." },
       { id: "hero/HeroEnterpriseSplit", summary: "Outcome headline with a Tailwind-built dashboard placeholder." },
     ],
   },

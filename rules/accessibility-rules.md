@@ -47,8 +47,10 @@ producing accessible output the first time; the evaluator catches regressions.
 
 ## 5. Motion and timing
 
-- Respect `prefers-reduced-motion: reduce`. Blocks with animation must
-  short-circuit to a static state when this preference is set.
+- Respect `prefers-reduced-motion: reduce`. When using **Framer Motion**, call
+  `useReducedMotion()` and skip animations (static layout) or snap to final
+  values; CSS-only blocks may use `motion-reduce:` / `motion-safe:` as a
+  secondary guard.
 - No content moves automatically for more than 5 seconds. Carousels — if
   used at all — are user-controlled.
 - No flashing content above 3 Hz.

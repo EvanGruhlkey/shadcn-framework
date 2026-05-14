@@ -63,10 +63,12 @@ export function FeatureGridThree({
               aria-hidden="true"
               className={cn(
                 "flex flex-none items-center justify-center rounded-md border border-border bg-muted/40 text-foreground/70",
-                variant === "icon-leading" ? "h-10 w-10" : "h-11 w-11",
+                variant === "icon-leading" ? "h-10 w-10 px-1" : "h-11 w-11 px-1.5",
               )}
             >
-              <span className="h-5 w-5">{item.icon}</span>
+              <span className="flex h-5 min-w-5 items-center justify-center gap-1 [&>svg]:h-[14px] [&>svg]:w-[14px] [&>svg]:shrink-0">
+                {item.icon}
+              </span>
             </span>
             <div className={cn(variant === "icon-leading" ? "min-w-0" : "mt-5")}>
               <h3 className="text-base font-semibold text-foreground">{item.title}</h3>

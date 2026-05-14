@@ -36,6 +36,10 @@
 
     --font-sans: "Inter", "Segoe UI", Roboto, sans-serif;
     --font-mono: "JetBrains Mono", "SFMono-Regular", "Menlo", monospace;
+
+    /* Recognizable integration marks (HSL components, no raw hex in TSX). */
+    --integration-slack: 291 47% 31%;
+    --integration-discord: 235 86% 65%;
   }
 
   .dark {
@@ -66,9 +70,11 @@
     --border: 240 6% 14%;
     --input: 240 6% 14%;
     --ring: 0 0% 98%;
+
+    --integration-slack: 300 52% 72%;
+    --integration-discord: 235 86% 72%;
   }
 }
-
 @layer base {
   * {
     @apply border-border;

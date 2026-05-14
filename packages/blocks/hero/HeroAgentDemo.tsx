@@ -3,18 +3,17 @@
  *
  * Implements pattern `hero/agent-demo-box` from the ai-agent-saas atlas.
  * The demo panel shows a representative input followed by the agent's
- * response. Animation is opt-in via `motion="subtle"` and respects
- * prefers-reduced-motion.
+ * response. When `motion="subtle"`, the transcript uses Framer Motion for a
+ * short panel fade-up and staggered lines; `useReducedMotion` falls back to
+ * CSS `motion-safe` fade or static markup.
  */
 
 import { Action, Eyebrow } from "../_lib/primitives.js";
-import { cn } from "../_lib/cn.js";
 
-export interface AgentTurn {
-  role: "user" | "agent";
-  content: string;
-  meta?: string;
-}
+import type { AgentTurn } from "./agent-types.js";
+import { TranscriptPanel } from "./TranscriptPanel.client.js";
+
+export type { AgentTurn } from "./agent-types.js";
 
 export interface HeroAgentDemoProps {
   eyebrow?: string;
@@ -65,65 +64,9 @@ export function HeroAgentDemo({
         </div>
 
         <div className="md:col-span-7">
-          <TranscriptPanel transcript={transcript} motion={motion} />
+          <TranscriptPanel motion={motion} transcript={transcript} />
         </div>
       </div>
     </section>
-  );
-}
-
-function TranscriptPanel({
-  transcript,
-  motion,
-}: {
-  transcript: AgentTurn[];
-  motion: "off" | "subtle";
-}) {
-  return (
-    <figure
-      className={cn(
-        "overflow-hidden rounded-lg border border-border bg-card shadow-sm",
-        motion === "subtle" &&
-          "motion-safe:animate-[fadeIn_220ms_ease-out_both] motion-reduce:animate-none",
-      )}
-      aria-label="Example agent transcript"
-    >
-      <header className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-3">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Example session
-        </span>
-        <span className="font-mono text-xs text-muted-foreground">read-only</span>
-      </header>
-      <ol className="divide-y divide-border">
-        {transcript.map((turn, i) => (
-          <li key={i} className="flex gap-4 px-5 py-4">
-            <span
-              className={cn(
-                "mt-0.5 inline-flex h-7 w-7 flex-none items-center justify-center rounded-full border text-xs font-medium",
-                turn.role === "user"
-                  ? "border-border bg-background text-muted-foreground"
-                  : "border-foreground/20 bg-foreground/[0.04] text-foreground",
-              )}
-              aria-hidden="true"
-            >
-              {turn.role === "user" ? "U" : "A"}
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-foreground">
-                  {turn.role === "user" ? "User" : "Agent"}
-                </span>
-                {turn.meta ? (
-                  <span className="text-xs text-muted-foreground">{turn.meta}</span>
-                ) : null}
-              </div>
-              <p className="mt-1 text-sm leading-relaxed text-foreground/90">
-                {turn.content}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </figure>
   );
 }

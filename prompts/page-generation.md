@@ -146,10 +146,12 @@ mid-page. Primary CTA must be obvious above the fold; proof must not
 compete with the hero. Preserve default focus visibility from shadcn; do not
 strip rings.
 
-**Motion** — Default still; if a block supports motion, use short,
-interruptible transitions on **transform/opacity only** (never
-`transition-all`), honor `prefers-reduced-motion`, and avoid motion that does
-not clarify structure (`rules/design-rules.md` §6).
+**Motion** — Prefer **Framer Motion** for any motion beyond a single CSS
+utility: use `motion` / `useReducedMotion` from `framer-motion`, cap motion at
+the limits in `rules/design-rules.md` §6 (short fades, ≤ 8 px translate-y on
+enter, no `transition-all` in Tailwind). Honor `prefers-reduced-motion` in JS,
+not only with `motion-safe:` classes. Reserve CSS keyframes for static
+fallbacks when the runtime hook is unavailable.
 
 ### 8. Content presentation
 
@@ -162,7 +164,9 @@ units (`10&nbsp;MB`) where the UI would otherwise break badly.
 
 At most one decorative gradient or mesh section per page
 (`rules/design-rules.md` §5). Every image needs meaningful `alt` text and
-reserved space so layout does not jump.
+reserved space so layout does not jump. Follow **Icons, integration marks,
+and hero media** (below) so pages do not read as “all typography”: use
+marks and photography where they clarify intent.
 
 ### 10. Do’s and don’ts (internal guardrails)
 
@@ -186,6 +190,52 @@ present, **still examine every image with vision first**, then merge token and
 prose guidance from the file with what you observed—tokens from the file win
 for color/type *values* when they conflict with a screenshot, but screenshots
 still inform section **structure and density** unless the user overrides.
+
+---
+
+## Icons, integration marks, and hero media
+
+Pages should feel **grounded**: when copy names a product people recognize,
+show its mark; when the product is physical or vertical, show **hero-level**
+photography or a user-controlled video — without breaking `rules/design-rules.md`
+§5–§6.
+
+### Named integrations (Slack, Discord, GitHub, …)
+
+- If the copy mentions **Slack**, **Discord**, **Microsoft Teams**, **GitHub**,
+  **Google**, **Notion**, or similar as **something the user connects to**,
+  render a **small** recognizable mark (inline SVG is fine) **next to that
+  copy** — for example in a `FeatureGridThree` icon slot (two marks side by
+  side are allowed), beside a bullet in a deep dive, or inside a CTA row.
+- Mark SVGs used only as decoration should be `aria-hidden="true"` when the
+  adjacent visible text already names the product; otherwise give the control
+  an `aria-label` that includes the product name.
+- **Do not** put third-party marks in `LogoStripMono` or testimonials as if
+  they were customers unless the user’s brief names them as real customers
+  (`rules/anti-clone-policy.md` §3).
+
+### Hero photography and video (especially non-dev verticals)
+
+- For **field services, retail, health, hospitality**, and other physical
+  categories, the **hero** (or the first `FeatureDeepDive` media column) should
+  include a **rights-cleared photograph** or illustration that matches the
+  brief (e.g. lawn care: mowing, equipment, crews; avoid unrelated stock).
+- Prefer `HeroEnterpriseSplit` with a custom `media` prop: `<figure>` wrapping
+  `next/image` with a stable width/height or `fill` + `sizes`, and an `alt` that
+  describes the scene, not “image of hero”.
+- **Video** may supplement a hero when the user asks for it: use `<video
+  controls playsInline preload="metadata">` with a `poster` image. Never use
+  `autoPlay` on marketing pages (`rules/design-rules.md` §6).
+- Allowed remote image hosts must be listed in `apps/studio/next.config.mjs`
+  (`images.remotePatterns`). Prefer `images.unsplash.com` URLs documented in
+  code comments or a short `figcaption` with photo credit when required by the
+  license.
+
+### Density
+
+Marks should read as **supporting** copy, not wallpaper: one integration row
+or feature card is usually enough for a given pair of products unless the
+brief calls for a longer list.
 
 ---
 
@@ -243,14 +293,17 @@ package.
 ## What you must not do
 
 - Do not import from any package other than `@framework/blocks`,
-  `@framework/patterns`, the studio's local `components/ui`, and standard
-  React/Next.js modules.
+  `@framework/patterns`, the studio's local `components/ui`, **`framer-motion`**
+  (for accessible page-level motion only), and standard React/Next.js modules.
 - Do not embed inline `<style>` or arbitrary Tailwind values
   (`text-[#3322aa]`). Use shadcn/ui CSS variables.
 - Do not hand-write a section the way a real SaaS company does it. Use a
   block. If no block fits, request one — do not improvise.
-- Do not name real companies, products, or people in copy unless the user
-  has explicitly provided them.
+- Do not name real companies, products, or people as **customers**, quoted
+  **endorsers**, or **logo-strip partners** in fictional proof unless the user
+  has explicitly provided them. **Exception:** naming a third-party product is
+  required when describing **integrations** — pair the name with its mark per
+  **Icons, integration marks, and hero media**.
 
 ---
 

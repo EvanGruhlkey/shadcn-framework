@@ -42,7 +42,11 @@ A page generated using this framework must not:
    `datasets/observations/` must stay below the configured threshold
    (default `cosine ≤ 0.85` over the section-vector embedding).
 4. Use a brand name, customer logo, or testimonial attribution that the
-   user did not explicitly provide.
+   user did not explicitly provide — **except** that naming a third-party
+   product and showing its **integration mark** next to integration feature
+   copy (e.g. “Send alerts to Slack”) is allowed. Do **not** imply that
+   company is a customer, partner, or endorser unless the user’s brief says
+   so.
 
 ## 4. Enforcement
 

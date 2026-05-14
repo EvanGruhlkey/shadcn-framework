@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "framer-motion": "^11.18.2",
     "tailwind-merge": "^2.5.4"
   }
 }

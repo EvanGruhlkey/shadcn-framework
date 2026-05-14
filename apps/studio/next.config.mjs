@@ -2,6 +2,16 @@
 const nextConfig = {
   transpilePackages: ["@framework/blocks", "@framework/patterns"],
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+    ],
+  },
+
   // The blocks and patterns packages use the standard TypeScript-with-ESM
   // convention of writing relative imports with a `.js` extension that
   // points at a `.ts` source file. `tsc` and `tsx` rewrite this
