@@ -1,64 +1,99 @@
 {
   "name": "launchframe",
-  "version": "0.1.3",
-  "description": "Point Launchframe at SaaS sites you admire and get back a drop-in shadcn/ui design system (tokens, Tailwind theme, CSS variables, AI handoff) you can build your own UI on top of.",
+  "version": "0.4.9",
+  "private": false,
+  "description": "Scaffold a Next.js app from a reference URL plus your SaaS idea — AI-ready website cloning",
+  "author": "JCodesMore",
   "license": "MIT",
-  "author": "Evan Gruhlkey",
-  "homepage": "https://github.com/evangruhlkey/launchframe#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evangruhlkey/launchframe.git"
+    "url": "https://github.com/JCodesMore/ai-website-cloner-template.git"
   },
+  "homepage": "https://github.com/JCodesMore/ai-website-cloner-template",
   "bugs": {
-    "url": "https://github.com/evangruhlkey/launchframe/issues"
+    "url": "https://github.com/JCodesMore/ai-website-cloner-template/issues"
   },
   "keywords": [
     "launchframe",
-    "shadcn",
-    "shadcn-ui",
-    "tailwind",
-    "design-system",
-    "design-tokens",
-    "playwright",
-    "cursor",
+    "saas",
+    "landing-page",
     "claude-code",
+    "website-clone",
+    "reverse-engineering",
+    "nextjs",
     "ai",
-    "cli"
+    "template",
+    "tailwindcss",
+    "shadcn-ui"
   ],
+  "engines": {
+    "node": ">=24"
+  },
   "bin": {
-    "launchframe": "bin/launchframe.mjs"
+    "launchframe": "bin/launchframe.cjs"
   },
   "files": [
     "bin",
-    "packages/extract",
-    "README.md",
-    "LICENSE"
-  ],
-  "workspaces": [
-    "apps/*",
-    "packages/*"
+    "src",
+    "docs",
+    "scripts",
+    "components.json",
+    "next.config.ts",
+    "postcss.config.mjs",
+    "eslint.config.mjs",
+    "tsconfig.json",
+    ".gitignore",
+    ".dockerignore",
+    ".gitattributes",
+    ".windsurfrules",
+    ".clinerules",
+    ".aider.conf.yml",
+    "Dockerfile",
+    "Dockerfile.dev",
+    "docker-compose.yml",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "LICENSE",
+    ".cursor",
+    ".claude",
+    ".codex",
+    ".continue",
+    ".gemini",
+    ".opencode",
+    ".windsurf",
+    ".github",
+    ".amazonq",
+    ".augment"
   ],
   "scripts": {
-    "extract": "tsx packages/extract/extract.ts",
-    "studio": "npm run dev --workspace apps/studio",
-    "studio:build": "npm run build --workspace apps/studio",
-    "capture": "tsx packages/capture/screenshot-site.ts",
-    "analyze": "tsx packages/analysis/analyze-screenshot.ts",
-    "formalize": "tsx packages/patterns/pattern-registry.ts",
-    "evaluate": "tsx packages/evaluation/evaluate-page.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "format:check": "prettier --check ."
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
-    "playwright": "^1.48.0",
-    "tsx": "^4.19.0"
+    "@base-ui/react": "^1.3.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.6.0",
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "shadcn": "^4.1.0",
+    "tailwind-merge": "^3.5.0",
+    "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
-    "@types/node": "^22.7.0",
-    "prettier": "^3.3.3",
-    "typescript": "^5.6.0"
-  },
-  "engines": {
-    "node": ">=20.0.0"
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
