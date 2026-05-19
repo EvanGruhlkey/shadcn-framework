@@ -4,622 +4,156 @@
 
 # Launchframe
 
-**`/launchframe`** is the **only** slash command for reverse-engineering a live site into this codebase. Parse **the reference URL(s) and SaaS idea the user passed with /launchframe**:
+You are about to take **the arguments provided by the user** and turn it into a runnable SaaS landing page. Inputs are:
 
-1. **Reference URL(s)** — Every `http://` or `https://` token (clone each site; use `docs/research/<hostname>/` when there are multiple).
-2. **SaaS idea** — All remaining text that is not a URL (often quoted): product pitch for hero and key marketing lines.
+1. A **target URL** — the site whose layout, components, and design language you will clone first.
+2. A **SaaS idea** — the product the user actually wants to launch. This is a short natural-language description (in quotes if it has spaces). Treat anything after the URL as the idea.
 
-You are a **foreman walking the job site** — write specs per section, dispatch builders in parallel where possible. After Phase 5, **`docs/research/LAUNCHFRAME_SUBAGENTS.md`** defines the **verbatim prompts** you must use to run verification (either four parallel **`Task`/subagents** fed one prompt each — **paste from that file only**, not from memory — or execute those four prompts **yourself sequentially**). Aggregate results only in **`docs/research/LAUNCHFRAME_VERIFICATION.md`**. **Never skip Phase 6** because subagents didn't auto-start — you initiate them explicitly from the Markdown prompt blocks. Narrative/marketing raster slots use **imagery your session generates itself** with the host’s **image-generation** tool (saved into `public/images/`), not missing assets — see **Brand identity**. Verification still covers raster slots, extracted **SVG/icons**, DOM, CSS, and **motion choreography**.
+The job is two phases:
 
-## Step 0 — Persist Launchframe inputs
+1. **Phase A — Clone** the target site pixel-perfect using the `/clone-website` skill / `.claude/skills/clone-website/SKILL.md`. This is the visual + structural foundation.
+2. **Phase B — Rebrand** the cloned codebase into the user's SaaS idea. Replace copy, product name, navigation, metadata, and content while preserving the cloned visual structure unless the idea demands a layout change.
 
-Before reconnaissance, write or update:
+Both phases run in one continuous session. Do not stop after Phase A and wait for user input — proceed directly into Phase B.
 
-- `src/lib/launchframe-config.ts` — `LAUNCHFRAME_SOURCE_URL` (primary URL, usually first), `LAUNCHFRAME_SAAS_IDEA`
-- `launchframe.context.json`
-- `docs/research/LAUNCHFRAME.md` — URLs and SaaS idea
-- **`docs/research/LAUNCHFRAME_SUBAGENTS.md`** — **before Phase 6**, ensure this runbook holds all four verifier prompts (**copy-ready**). When the bundled template differs from the latest SKILL rubrics (after skill edits), re-sync Section **Phase 6** rubrics **into this file**. Subagents receive prompts **only** from here.
+## Argument Parsing
 
-## SaaS copy overlay (Phase 4 assembly and final polish)
+`the arguments provided by the user` will be something like:
 
-After structure and styles match the reference, apply the **SaaS idea** to hero, headings, and primary CTAs where the reference uses interchangeable marketing copy, **without** changing layout grids, spacing, or **motion numbers** from extracted specs. **Icon shapes** and **animations** (`@keyframes`, transitions, staggers, scroll triggers) remain **parity goals** sourced from extraction — swapping narrative photos does **not** relax them. **Brand identity** (below) must be **original** for anything you ship as the user’s product — never pass off the reference company’s trademarks or distinctive marks.
+```
+https://linear.app "an AI-powered customer support inbox for indie founders"
+```
 
----
+Parse it as:
+- **First whitespace-delimited token that looks like a URL** → target URL for `/clone-website`.
+- **Everything else** → the SaaS idea. Strip surrounding quotes if present. Trim whitespace.
 
-## Scope Defaults
+If the user provides multiple URLs, treat the FIRST as the clone target and surface a confirmation: "I'll clone <url1>, then rebrand it as <idea>. Should I also clone <url2..N> as additional pages, or ignore them?" Default to ignoring extras unless the user confirms.
 
-The target page(s) are the URL(s) you parsed in Pre-Flight. Clone exactly what's visible at each URL. Unless the user specifies otherwise, use these defaults:
-
-- **Fidelity level:** Pixel-perfect — exact match in colors, spacing, typography, **SVG icon presentation** (dimensions, strokes, fills, `viewBox`), **animations** (`@keyframes`, `animation*` / `transition*`, WA API timings, scroll timelines), raster **presentation** (responsive markup + CSS painting), **DOM structure**, and **authored CSS intent** (computed values must match after extraction)
-- **In scope:** Visual layout and styling, component structure and interactions, responsive design, mock data for demo purposes
-- **Out of scope:** Real backend / database, authentication, real-time features, SEO optimization, accessibility audit
-- **Customization:** Structure and visuals — pure emulation of the reference. **Marketing copy** — apply the parsed **SaaS idea** where hero/headlines/CTAs are interchangeable (see “SaaS copy overlay” above); do not invent a different product than the user’s idea.
-- **Brand identity:** The reference is a **pattern** for layout, motion, and UI craft — **not** permission to ship their brand. Unless the user **explicitly** asks for a faithful copy of the reference brand (e.g. licensed work, clearly labeled internal mock, private design audit), **invent an original brand** aligned with the SaaS idea: product name, wordmark or simple logomark (SVG or styled text) sized to the same logo slot, favicon / app icon, OG imagery, and a cohesive palette. Do **not** reuse their trademarked logo paths, mascot art, or distinctive illustrative brand assets; use originals or functional UI icons instead. **Every raster slot** that is a photograph, illustration, or narrative marketing image on the reference (hero, feature mockups, social proof portraits, decorative panels, card thumbnails) must ship as **new, original imagery** grounded in the **SaaS idea** — treat the reference shot as a **composition brief** (aspect ratio, mood, subject *role*: dashboard vs lifestyle vs avatar) and recreate with product-relevant scenes, UI surrogates, logosafe crops, or **supporting sub-frames** (detail insets, secondary panels) that read as one family. **Mandatory delivery:** those slots **must** have real raster files checked into `public/images/` (or another committed static path your build serves) — **no** omitted `<img>`/`<Image>`, **no** indefinite placeholder divs/colors standing in for a photo where the reference showed one, **no** broken `href/src`. **You generate these files yourself:** use your host's **built-in image generation** capability (explicit image prompts aligned to the SaaS idea + composition brief from each reference slot), write outputs into `public/images/`, wire them into JSX, and note each file in `docs/research/LAUNCHFRAME.md`. You may **supplement** with composites or screenshots of **your** product UI mocks you build in code, but you **do not** wait for the user to supply artwork. Preserve **exact** framing CSS (`object-fit`, `object-position`, masks, layering). Do **not** hotlink or ship their competitor lifestyle/brand photography bytes except when the user explicitly allows it. Note in `docs/research/LAUNCHFRAME.md` which marks and assets are **original brand** versus **layout-only** extraction, and **list paths** for every authored narrative image.
-- **Functional icons & motion choreography:** Anything the reference treats as **UI iconography that is not a forbidden trademark** (chevrons, menu marks, inline pictograms, sprite symbols, repeating UI glyphs) — **lift path data / sprite refs / mask SVGs from the DOM** and reproduce **`viewBox`, stroke widths, joins, fills, `currentColor` behavior.** Do **not** swap in unrelated Lucide (or arbitrary stock SVG) guesses "that look close." **`@keyframes`**, **`transition` / `animation` longhands**, scroll-driven timelines, carousel timings, stagger delays, easing curves — **lift from live measurement + stylesheet text** per §0.3 — **omit or substitute timing only** when respecting `prefers-reduced-motion` or when the measured reference does the same. Product-themed raster replacements do **not** waive SVG or animation parity.
-
-If the user provides additional instructions (specific fidelity level, customizations, extra context), honor those over the defaults.
+If you cannot identify a URL OR an idea string, stop and ask the user to provide both in the form: `/launchframe <url> "<saas-idea>"`.
 
 ## Pre-Flight
 
-1. **Real browser automation is required.** Check for browser MCP tools (Chrome DevTools MCP first, then Playwright MCP, Browserbase MCP, Puppeteer MCP, etc.). **Prefer Chrome DevTools MCP** when it is connected: run **`evaluate_script` / in-page `evaluate`** on the live tab so motion is measured from the same rendering pipeline users see (`getComputedStyle`, Web Animations API, stylesheet keyframes where readable). If multiple tools are available, still use **Chrome MCP for reconnaissance and motion extraction**; other tools are fine for screenshots or navigation if needed. If no browser MCP is detected, ask the user once how to connect Chrome DevTools MCP (or another tool) — this skill cannot run blind. **Motion is first-class:** durations, delays, easings, keyframe curves, scroll/view timelines, and interaction triggers must be **copied from live measurements**, not invented from adjectives like “smooth” or “snappy.”
-2. **Parse arguments** — extract every `http://` / `https://` URL token (there may be several). **SaaS idea** = the remaining non-URL text (trim outer quotes). Normalize and validate each URL; if any are invalid, or the SaaS idea is missing, ask the user once. For each valid URL, verify it is accessible via **Chrome MCP** (preferred) or your connected browser tool.
-3. Verify the base project builds: `npm run build`. The Next.js + shadcn/ui + Tailwind v4 scaffold should already be in place. If not, tell the user to set it up first.
-4. Create the output directories if they don't exist: `docs/research/`, `docs/research/components/`, `docs/design-references/`, `scripts/`. For multiple clones, also prepare per-site folders like `docs/research/<hostname>/` and `docs/design-references/<hostname>/`.
-5. When working with multiple sites in one command, optionally confirm whether to run them in parallel (recommended, if resources allow) or sequentially to avoid overload.
+1. **Browser automation is required** — same requirement as `/clone-website`. Check for any browser MCP (Chrome, Playwright, Browserbase, Puppeteer). If none are available, ask the user which to enable before proceeding.
+2. Verify the base scaffold builds: `npm run build`. If not, fix the scaffold before continuing.
+3. Confirm the parsed URL and idea back to the user in one sentence ("Cloning <url>, then rebranding as: <idea>."). Do not pause for approval unless the parse looks ambiguous.
+4. Create a working notes file at `docs/research/LAUNCHFRAME.md` containing:
+   - The target URL
+   - The verbatim idea string
+   - A short interpretation of the idea (product name candidate, audience, core value prop, primary CTA) — this is your rebrand brief.
 
-## Guiding Principles
+## Read `.agents` (required)
+
+**Before starting Phase A**, read every skill under `.agents/skills/` in full. Do not begin the clone until you have.
 
-These are the truths that separate a successful clone from a "close enough" mess. Internalize them — they should inform every decision you make.
+| Skill | Path | Use during launchframe |
+| --- | --- | --- |
+| Design polish | `.agents/skills/emil-design-eng/SKILL.md` | Easing, press/hover states, transition properties, motion frequency — apply while building sections, not as an afterthought |
+| Motion | `.agents/skills/motion/SKILL.md` | Any `motion` / scroll / tab / marquee behavior you implement in Phase A or touch in Phase B |
+| SVG & path animation | `.agents/skills/svg-animations/SKILL.md` | Inline SVGs, Lottie, path draws, logo strips with animated graphics |
 
-### 0. Visual crawl priority (images, SVGs, motion — first)
+If a new skill appears in `.agents/skills/`, read it before continuing. **Before Phase B**, re-scan `.agents/skills/` for anything added during Phase A and read it before B1. Phase A is not layout-only: match the target pixel-perfect **and** meet the bar from these skills (especially `emil-design-eng` for interaction polish and `motion` for exact timings).
 
-When you traverse the DOM and the Network panel, do **not** treat all nodes equally. Work in this **priority order** so the clone feels like the original, not a wireframe:
+## Phase A: Clone
 
-1. **Images (raster + video stills) — HTML, files, and CSS together** — Enumeration is not enough: the clone must match **how** each asset is mounted and styled.
-   - **Markup parity:** Preserve `<picture>` / `<source>` **order**, **`media` / `type`** attributes, and **`sizes`** where the reference uses them; preserve **`srcset`** descriptor patterns (w/x qualifiers) on `<img>` or **equivalent** `next/image` `sizes` + `srcSet` (document the mapping in the spec). Copy **`loading`**, **`decoding`**, **`fetchpriority`**, **`alt`**, **`role`/`aria-*`** when they affect layout or LCP. **`width` / `height`** (or intrinsic aspect + CSS `aspect-ratio`) must stop layout shift the same way as the reference; note **`width`/`height` attributes vs CSS** if both exist.
-   - **Box + painting:** Extract and reproduce **`object-fit`**, **`object-position`**, **parent `overflow`**, **clipping `border-radius`**, **masks**, **`filter`**, and **`mix-blend-mode`** on the same stacking context as the live node. **`background-image`** on the element or **`::before` / `::after`** must use the **same** cover/contain behavior, **position**, **size**, **repeat**, and **attachment** (record pseudo-elements explicitly in the spec).
-   - **Files:** For **structural/decorative or permission-neutral** imagery (textures, gradients, generic UI chrome where no competitor brand reads), download real bytes to `public/images/` (or videos/posters). **Provenance** in spec: URL hash or byte size so verifiers can confirm the correct asset. For **brand- or product-story** photos and illustrations per Scope Defaults, **do not** pass off the reference files as yours — replace with originals saved under `public/images/` with spec lines **substitute — product-themed** (describe intent vs reference role). No unrelated stock swaps unless similarly marked.
-2. **SVGs & iconography — copy glyphs, don't improvise.** Inline `<svg>`, sprite `symbol` defs, **SVG used as masks/filters**, icon fonts (**prefer extracting vector paths**, not swapping fonts blindly). Convert to `@/components/icons.tsx` (or section-local components) with meaningful names. **Ship the reference geometry**: matching `viewBox`, path coordinates, strokes/caps/joins — verify at 1× and 2× DPR beside a screenshot overlay. Replacing forbidden trademark marks is done under Brand identity with **equivalent silhouette area + optical weight**, not a random different icon shape.
-3. **Motion & animation (Chrome MCP) — copy choreography, omit nothing casually.** Treat this like color and spacing: **numeric fidelity**. If the reference animates **on load, hover, scroll, intersection, drag, carousel tick, or tab change**, capture and port it unless `prefers-reduced-motion` or an explicit exemption says otherwise — a static clone while the reference moves is wrong. In Chrome MCP, evaluate scripts against the live page to capture:
-   - Full **`animation`** shorthand plus **`animation-*` longhands** (`animation-name`, `-duration`, `-delay`, `-timing-function`, `-iteration-count`, `-direction`, `-fill-mode`, `-play-state`, **`animation-timeline`** / scroll timelines)
-   - Full **`transition`** shorthand plus **`transition-*` longhands**, and **`transform`** / **`will-change`** as applied during and after motion
-   - **Author `@keyframes`** — walk `document.styleSheets` / `cssRules` and copy `CSSKeyframesRule` bodies **where the browser exposes them** (same-origin stylesheets). For cross-origin CSS that throws on access, use DevTools **Sources** or fetch the CSS URL and paste the `@keyframes` into the spec — do not guess intermediate keyframe percentages
-   - **Web Animations API** — for each moving node, `element.getAnimations({ subtree: false })` and record each effect’s timing (`duration`, `delay`, `easing`, `iterations`, `direction`, `fill`)
-   - **Scroll-driven behavior** — exact scroll thresholds (px or intersection ratios), `scroll-snap-*`, and libraries (**Lenis**, **Locomotive Scroll**, etc.) with the same init/wrapper classes the reference uses
-   - **`prefers-reduced-motion`** — note whether the site alters or disables motion (evaluate `matchMedia('(prefers-reduced-motion: reduce)')` and compare to a forced reduced-motion emulation if DevTools allows)
-   Run the **Phase 1 motion audit script** and merge findings into `docs/research/BEHAVIORS.md`. Capture **numbers** (`ms`, `cubic-bezier(...)`, stagger offsets), not adjectives.
+Run the `/clone-website` skill end-to-end against the target URL. The full instructions live in `.claude/skills/clone-website/SKILL.md` — do not paraphrase them, do not skip phases.
 
-Only after the above are accounted for should you spend cycle time on minor text or non-visual refactors. A perfect grid with missing hero art and dead animation still fails the clone.
+Specifically, complete:
 
-### 0b. HTML / DOM structure (layout tree, not “vibes”)
+- Reconnaissance (screenshots, fonts, colors, favicons, interaction sweep, page topology)
+- Foundation build (fonts, globals.css, types, icons, asset download)
+- Component specification & dispatch (per-section spec files + parallel builder agents in worktrees)
+- Page assembly (`src/app/page.tsx` wired up with all sections)
+- Visual QA diff against the original
 
-**Exact** means the **visible layout tree** matches: **section order**, **sibling order**, **wrapper depth** (decorative `div`s, flex rows, grid shells), and **key hooks** (sticky wrappers, scroll containers). React may rename tags **only** if roles/landmarks still reflect the same outline and **computed layout** is unchanged — do not collapse three nested wrappers into one unless the spec proves they are redundant in the reference. Specs must include a short **DOM outline** (indentation sketch or bullet tree) for complex sections so builders and **Phase 6 verifiers** can diff structure.
+Phase A ends only when:
+- All sections are merged
+- `npm run build` passes clean
+- The clone visually matches the target at 1440px and 390px (visual QA done)
 
-### 0c. CSS fidelity (authored + computed)
+Do not move to Phase B before the clone is solid. A messy clone produces a messy rebrand.
 
-Tailwind utilities are fine **only** as a transport for **measured** values. Every critical rule must trace back to **`getComputedStyle()`** (or authored sheet text) from Chrome MCP: **no “close” token swaps** (`rounded-lg` when the radius is `10px`, `gap-4` when gap is `18px`) unless values compile to the same pixel output. Prefer arbitrary values (`max-w-[872px]`, `rounded-[10px]`) when shadcn defaults don’t land on the measured number. **Pseudo-elements** and **custom properties** used by the reference must appear in the clone with the same cascade intent.
+## Phase B: Rebrand into the SaaS Idea
 
-### 1. Completeness Beats Speed
+Now transform the cloned codebase into the user's product. The visual shell stays, the content/identity changes.
 
-Every builder agent must receive **everything** it needs to do its job perfectly: screenshot, exact CSS values, downloaded assets with local paths, real text content, component structure. If a builder has to guess anything — a color, a font size, a padding value — you have failed at extraction. Take the extra minute to extract one more property rather than shipping an incomplete brief.
+### B1. Define the Rebrand Brief
 
-### 2. Small Tasks, Perfect Results
+Open `docs/research/LAUNCHFRAME.md` and expand the brief into concrete creative direction:
 
-When an agent gets "build the entire features section," it glosses over details — it approximates spacing, guesses font sizes, and produces something "close enough" but clearly wrong. When it gets a single focused component with exact CSS values, it nails it every time.
+- **Product name** — propose 1 strong name based on the idea. Use this everywhere.
+- **One-line value prop** — the hero subheading. Plain, specific, no fluff.
+- **Primary audience** — who buys this.
+- **Top 3 features** — what the product actually does. Each gets a name, a 1-sentence description, and (if the layout supports it) a supporting illustration concept.
+- **Primary CTA** — what action you want visitors to take ("Start free", "Join the waitlist", "Get early access"). Pick one and use it consistently across hero, mid-page, and footer CTAs.
+- **Tone of voice** — match the idea (e.g., playful for consumer, calm + technical for infra, confident + concise for prosumer tools).
+- **Brand accent (optional)** — if the cloned palette is too tied to the original's identity (e.g., a literal logo color), pick ONE accent color and update `--primary` (and any tightly bound tokens) in `src/app/globals.css`. Keep everything else from the clone.
 
-Look at each section and judge its complexity. A simple banner with a heading and a button? One agent. A complex section with 3 different card variants, each with unique hover states and internal layouts? One agent per card variant plus one for the section wrapper. When in doubt, make it smaller.
+Write all of this to `docs/research/LAUNCHFRAME.md` so the work is auditable.
 
-**Complexity budget rule:** If a builder prompt exceeds ~150 lines of spec content, the section is too complex for one agent. Break it into smaller pieces. This is a mechanical check — don't override it with "but it's all related."
+### B2. Inventory the Content to Replace
 
-### 3. Real Content, Real Assets
+Walk the codebase and enumerate every place that contains target-site-specific content. Build a checklist in `docs/research/LAUNCHFRAME.md`:
 
-Extract the **verbatim marketing copy only where it is layout boilerplate**; otherwise apply the SaaS idea. For **pixels**: extract **dimensions, layering, masks, responsive markup, and filenames/paths needed for parity**, but treat **marketing photos and illustrative brand art** per Scope Defaults — **authored originals** tied to the product (including cohesive **sub-images** where the reference uses a small secondary crop or inset), not a gallery of their stock photography. Structural assets (patterns, screenshots of generic UI motifs you rebuild) follow §0 extraction. **Functional icons (`<svg>`/sprites) and all motion choreography are copied from extraction** alongside that — originals-for-product applies to narrative **raster** slots, **not** to carte-blanche SVG or timing drift. Download every reference `<video>` poster and neutral asset you keep; extract inline `<svg>` elements as React components unless they encode trademark marks forbidden under Brand identity (replace with equivalent optical weight there). Fabricate raster/vector only when extraction is blocked — label **substitute** in specs and research notes — and **avoid unrelated stock**; stay on-theme for the SaaS idea.
+- Logo / wordmark (component + SVG/PNG asset paths)
+- Header / navigation items + their hrefs
+- Hero heading, subheading, CTAs
+- Every feature/section heading and body copy
+- Testimonials (names, titles, companies, quotes)
+- Logos / social proof strip
+- Pricing tiers (if present)
+- Footer columns, links, legal copy
+- Page `<title>` and meta description (in `src/app/layout.tsx`)
+- OG image filename + alt text
+- Favicons (only swap if the original favicon is clearly the target's logo)
+- Any product screenshots / UI mockups in `public/images/`
 
-**Layered assets matter.** A section that looks like one image is often multiple layers — a background watercolor/gradient, a foreground UI mockup PNG, an overlay icon. Inspect each container's full DOM tree and enumerate ALL `<img>` elements and background images within it, including absolutely-positioned overlays. Missing an overlay image makes the clone look empty even if the background is correct.
+For each item, note: file path → current value → planned new value. This is the rebrand worksheet.
 
-### 4. Foundation First
+### B3. Apply the Rebrand
 
-Nothing can be built until the foundation exists: global CSS with the target site's design tokens (colors, fonts, spacing), TypeScript types for the content structures, and global assets (fonts, favicons). This is sequential and non-negotiable. Everything after this can be parallel.
+Execute the worksheet end-to-end:
 
-### 5. Extract How It Looks AND How It Behaves
+1. **Strings & copy** — edit the React components in `src/components/` (and `src/app/page.tsx` if it holds content) to use the new product name, hero copy, feature blurbs, testimonials, footer text, etc. Keep DOM structure and class names intact unless the new content fundamentally needs more/less elements. **Preserve all `motion` imports, variants, transitions, and AnimatePresence wrappers** — content changes, motion stays. If a section uses a typewriter or animated terminal, swap the lines of text but keep the typewriter library and timing intact.
+2. **Navigation** — update nav items in the header component to reflect the new product's information architecture (e.g., Features / Pricing / Docs / Blog / Login). Use `#` anchors that match on-page sections, or `/coming-soon` for routes that don't exist yet.
+3. **CTAs** — replace original CTAs with the new primary CTA. All "Get started", "Sign up", "Talk to sales" etc. should align with the chosen primary action.
+4. **Testimonials & social proof** — replace with plausible-sounding placeholder testimonials that fit the new audience. Mark them clearly as placeholders in a comment above the data so the user knows to swap in real ones. Do NOT keep the original site's real customer names — that's impersonation.
+5. **Logos strip** — if the clone includes a "trusted by" logo strip, replace with neutral placeholder boxes (greyed-out wordmarks the user can replace) instead of keeping real company logos.
+6. **Images / illustrations** — for hero mockups and feature illustrations, if the cloned assets are clearly product screenshots of the target, keep the layout but add a `TODO:` comment in the JSX next to each `<Image>` pointing at the file to swap. Don't generate fake screenshots; leave the original images in place with a comment so the user knows what to replace. Same rule for `<video>` background clips and Lottie JSONs: keep the playback wiring (`autoplay muted playsInline loop`, `lottie-react` import) intact, only mark the asset path with a `TODO:` if it's clearly the target's product footage.
+7. **Logo / wordmark** — replace the cloned logo SVG/text with a simple text wordmark using the new product name. Use the same typography token (e.g., the existing brand font) so it visually fits. Add a `TODO:` for the user to replace with a designed mark.
+8. **Metadata** — update `src/app/layout.tsx`:
+   - `metadata.title` → `"<Product Name> — <one-line value prop>"`
+   - `metadata.description` → the value prop, expanded to ~140 chars
+   - OG image: if the existing one shows the target's brand, replace the file with a placeholder PNG (or update the metadata to point to a `TODO`-tagged file). Don't leave the target's OG image referenced.
+9. **Favicon** — only replace if the favicon is clearly the target's logo. If neutral, keep it. If swapping, add a placeholder favicon and `TODO:` comment.
+10. **Accent color (if chosen in B1)** — update CSS variables in `src/app/globals.css` to use the new accent. Do this surgically — only touch the variables tied to the accent, not the entire palette.
+11. **Routes / pages** — `/clone-website` cloned a single page. If the navigation references routes that don't exist (`/pricing`, `/docs`, `/blog`), add lightweight placeholder pages under `src/app/<route>/page.tsx` with a heading and a "Coming soon" body — only if those routes are in the new nav.
 
-A website is not a screenshot — it's a living thing. Elements move, change, appear, and disappear in response to scrolling, hovering, clicking, resizing, and time. If you only extract the static CSS of each element, your clone will look right in a screenshot but feel dead when someone actually uses it.
+### B4. Verify
 
-For every element, extract its **appearance** (exact computed CSS via `getComputedStyle()`) AND its **behavior** (what changes, what triggers the change, and how the transition happens). Not "it looks like 16px" — extract the actual computed value. Not "the nav changes on scroll" — document the exact trigger (scroll position, IntersectionObserver threshold, viewport intersection), the before and after states (both sets of CSS values), and the transition (duration, easing, CSS transition vs. JS-driven vs. CSS `animation-timeline`).
+- Run `npm run typecheck`, `npm run lint`, `npm run build` — all must pass.
+- Take a fresh full-page screenshot of the rebranded clone at 1440px and 390px via browser MCP. Save to `docs/design-references/launchframe-after-1440.png` / `-390.png`.
+- Diff visually against the Phase A clone screenshots: layout/spacing should be unchanged, copy/branding should be different. Flag any unintended visual regressions and fix them.
 
-Examples of behaviors to watch for — these are illustrative, not exhaustive. The page may do things not on this list, and you must catch those too:
-- A navbar that shrinks, changes background, or gains a shadow after scrolling past a threshold
-- Elements that animate into view when they enter the viewport (fade-up, slide-in, stagger delays)
-- Sections that snap into place on scroll (`scroll-snap-type`)
-- Parallax layers that move at different rates than the scroll
-- Hover states that animate (not just change — the transition duration and easing matter)
-- Dropdowns, modals, accordions with enter/exit animations
-- Scroll-driven progress indicators or opacity transitions
-- Auto-playing carousels or cycling content
-- Dark-to-light (or any theme) transitions between page sections
-- **Tabbed/pill content that cycles** — buttons that switch visible card sets with transitions
-- **Scroll-driven tab/accordion switching** — sidebars where the active item auto-changes as content scrolls past (IntersectionObserver, NOT click handlers)
-- **Smooth scroll libraries** (Lenis, Locomotive Scroll) — check for `.lenis` class or scroll container wrappers
+## Guardrails
 
-### 6. Identify the Interaction Model Before Building
+- **Preserve structure, change content.** Don't restructure the layout while rebranding — that's a separate task. The whole point of using a clone as a starting frame is the structure is already correct.
+- **Preserve motion, change copy.** Don't strip `motion`, Lottie, typewriter, or video animations during the rebrand. If a section's animation feels off for the new product, swap the *content* (text, image, JSON) — not the *motion wiring*. A dead landing page kills the launch.
+- **Re-localize typewriter / terminal content.** If a section types out target-specific commands like `linear add issue ...`, replace those lines with plausible lines for the new product (`<productname> create ticket ...`) but keep the typing library, cursor blink, and timing identical.
+- **No impersonation of the target.** Never carry over the target's real customer testimonials, logos, or trademarks into the rebranded site. Replace them with placeholders.
+- **Mark placeholders.** Every piece of content the user must replace later (illustrations, OG image, favicon, real testimonials, real logos, product-footage `<video>` clips, product-screenshot Lotties) gets a `TODO:` comment in the JSX immediately above it, so the user can grep for `TODO:` and find every gap.
+- **Single product name everywhere.** Once you pick the product name in B1, use it consistently — header, hero, meta title, footer copyright, OG. No mixed names.
+- **Keep the clone's typography and spacing.** Only change the accent color (B1) if the cloned palette is too tied to the original's identity. Don't redesign.
 
-This is the single most expensive mistake in cloning: building a click-based UI when the original is scroll-driven, or vice versa. Before writing any builder prompt for an interactive section, you must definitively answer: **Is this section driven by clicks, scrolls, hovers, time, or some combination?**
-
-How to determine this:
-1. **Don't click first.** Scroll through the section slowly and observe if things change on their own as you scroll.
-2. If they do, it's scroll-driven. Extract the mechanism: `IntersectionObserver`, `scroll-snap`, `position: sticky`, `animation-timeline`, or JS scroll listeners.
-3. If nothing changes on scroll, THEN click/hover to test for click/hover-driven interactivity.
-4. Document the interaction model explicitly in the component spec: "INTERACTION MODEL: scroll-driven with IntersectionObserver" or "INTERACTION MODEL: click-to-switch with opacity transition."
-
-A section with a sticky sidebar and scrolling content panels is fundamentally different from a tabbed interface where clicking switches content. Getting this wrong means a complete rewrite, not a CSS tweak.
-
-### 7. Extract Every State, Not Just the Default
-
-Many components have multiple visual states — a tab bar shows different cards per tab, a header looks different at scroll position 0 vs 100, a card has hover effects. You must extract ALL states, not just whatever is visible on page load.
-
-For tabbed/stateful content:
-- Click each tab/button via browser MCP
-- Extract the content, images, and card data for EACH state
-- Record which content belongs to which state
-- Note the transition animation between states (opacity, slide, fade, etc.)
-
-For scroll-dependent elements:
-- Capture computed styles at scroll position 0 (initial state)
-- Scroll past the trigger threshold and capture computed styles again (scrolled state)
-- Diff the two to identify exactly which CSS properties change
-- Record the transition CSS (duration, easing, properties)
-- Record the exact trigger threshold (scroll position in px, or viewport intersection ratio)
-
-### 8. Spec Files Are the Source of Truth
-
-Every component gets a specification file in `docs/research/components/` BEFORE any builder is dispatched. This file is the contract between your extraction work and the builder agent. The builder receives the spec file contents inline in its prompt — the file also persists as an auditable artifact that the user (or you) can review if something looks wrong.
-
-The spec file is not optional. It is not a nice-to-have. If you dispatch a builder without first writing a spec file, you are shipping incomplete instructions based on whatever you can remember from a browser MCP session, and the builder will guess to fill gaps.
-
-### 9. Build Must Always Compile
-
-Every builder agent must verify `npx tsc --noEmit` passes before finishing. After merging worktrees, you verify `npm run build` passes. A broken build is never acceptable, even temporarily.
-
-## Phase 1: Reconnaissance
-
-Navigate to the target URL with browser MCP.
-
-Follow **§0 (Visual crawl priority)** during the entire reconnaissance pass: images and backgrounds → SVGs/icons → motion/animations — before spending time on secondary copy tweaks.
-
-### Screenshots
-- Take **full-page screenshots** at desktop (1440px) and mobile (390px) viewports
-- Save to `docs/design-references/` with descriptive names
-- These are your master reference — builders will receive section-specific crops/screenshots later
-
-### Global Extraction
-Extract these from the page before doing anything else:
-
-**Fonts** — Inspect `<link>` tags for Google Fonts or self-hosted fonts. Check computed `font-family` on key elements (headings, body, code, labels). Document every family, weight, and style actually used. Configure them in `src/app/layout.tsx` using `next/font/google` or `next/font/local`.
-
-**Colors** — Extract the site's color palette from computed styles across the page. Update `src/app/globals.css` with the target's actual colors in the `:root` and `.dark` CSS variable blocks. Map them to shadcn's token names (background, foreground, primary, muted, etc.) where they fit. Add custom properties for colors that don't map to shadcn tokens.
-
-**Favicons & Meta** — Download favicons, apple-touch-icons, OG images, webmanifest to `public/seo/`. Update `layout.tsx` metadata.
-
-**Global UI patterns** — Identify any site-wide CSS or JS: custom scrollbar hiding, scroll-snap on the page container, global keyframe animations, backdrop filters, gradients used as overlays, **smooth scroll libraries** (Lenis, Locomotive Scroll — check for `.lenis`, `.locomotive-scroll`, or custom scroll container classes). Add these to `globals.css` and note any libraries that need to be installed.
-
-### Mandatory Interaction Sweep
-
-This is a dedicated pass AFTER screenshots and BEFORE anything else. Its purpose is to discover every behavior on the page — many of which are invisible in a static screenshot.
-
-**Scroll sweep:** Scroll the page slowly from top to bottom via **Chrome MCP** (real wheel / scroll in the live tab). At each section, pause and observe:
-- Does the header change appearance? Record the scroll position where it triggers.
-- Do elements animate into view? Record which ones and the animation type.
-- Does a sidebar or tab indicator auto-switch as you scroll? Record the mechanism.
-- Are there scroll-snap points? Record which containers.
-- Is there a smooth scroll library active? Check for non-native scroll behavior.
-
-**Click sweep:** Click every element that looks interactive:
-- Every button, tab, pill, link, card
-- Record what happens: does content change? Does a modal open? Does a dropdown appear?
-- For tabs/pills: click EACH ONE and record the content that appears for each state
-
-**Hover sweep:** Hover over every element that might have hover states:
-- Buttons, cards, links, images, nav items
-- Record what changes: color, scale, shadow, underline, opacity
-
-**Responsive sweep:** Test at 3 viewport widths via **Chrome MCP**:
-- Desktop: 1440px
-- Tablet: 768px
-- Mobile: 390px
-- At each width, note which sections change layout (column → stack, sidebar disappears, etc.) and at approximately which breakpoint the change occurs.
-
-Save all findings to `docs/research/BEHAVIORS.md`. This is your behavior bible — reference it when writing every component spec.
-
-### Motion & animation — Chrome MCP numeric audit (mandatory)
-
-After the interaction sweeps, run this **once per URL** inside **Chrome DevTools MCP** (page evaluation / `evaluate_script`) and append the JSON under `## Motion audit (Chrome MCP)` in `docs/research/BEHAVIORS.md`. Re-run targeted evaluations on a section container selector if the capped sample misses hero, nav, or carousel motion.
-
-```javascript
-// Motion audit — run via Chrome MCP evaluate_script on the target URL
-(function motionAudit() {
-  const props = [
-    'animation', 'animationName', 'animationDuration', 'animationDelay',
-    'animationTimingFunction', 'animationIterationCount', 'animationDirection',
-    'animationFillMode', 'animationPlayState', 'animationTimeline',
-    'transition', 'transitionProperty', 'transitionDuration',
-    'transitionTimingFunction', 'transitionDelay',
-    'transform', 'willChange'
-  ];
-  const animated = [...document.querySelectorAll('*')].filter((el) => {
-    const cs = getComputedStyle(el);
-    return (
-      (cs.animationName && cs.animationName !== 'none') ||
-      (cs.transitionProperty && cs.transitionProperty !== 'none' && cs.transitionProperty !== 'all')
-    );
-  });
-  const label = (el) => {
-    const tag = el.tagName.toLowerCase();
-    const id = el.id ? '#' + el.id : '';
-    const cls = el.className && typeof el.className === 'string'
-      ? '.' + el.className.trim().split(/\s+/).filter(Boolean).slice(0, 4).join('.')
-      : '';
-    return tag + id + cls;
-  };
-  const samples = animated.slice(0, 100).map((el) => {
-    const cs = getComputedStyle(el);
-    const row = { path: label(el) };
-    props.forEach((p) => { row[p] = cs[p]; });
-    try {
-      row.webAnimations = el.getAnimations({ subtree: false }).map((a) => {
-        const t = a.effect && typeof a.effect.getTiming === 'function' ? a.effect.getTiming() : null;
-        return { playState: a.playState, currentTime: a.currentTime, timing: t };
-      });
-    } catch (e) {
-      row.webAnimationsError = String(e);
-    }
-    return row;
-  });
-  let keyframes = [];
-  try {
-    [...document.styleSheets].forEach((sheet, i) => {
-      let rules;
-      try { rules = sheet.cssRules; } catch { return; }
-      if (!rules) return;
-      [...rules].forEach((rule) => {
-        if (rule.type === CSSRule.KEYFRAMES_RULE) {
-          keyframes.push({ sheetIndex: i, name: rule.name, cssText: rule.cssText });
-        }
-      });
-    });
-  } catch (e) {
-    keyframes = [{ error: String(e), hint: 'Cross-origin stylesheets block cssRules — copy @keyframes from DevTools or fetched CSS.' }];
-  }
-  return JSON.stringify({
-    url: location.href,
-    prefersReducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
-    animatedElementCount: animated.length,
-    sampledElements: samples.length,
-    samples,
-    keyframesRules: keyframes
-  }, null, 2);
-})();
-```
-
-**Implementation rule:** Component specs and React/CSS must match these **measured** values. If the audit omits an element (cap 100), run a second pass scoped to that section’s root selector.
-
-### Page Topology
-Map out every distinct section of the page from top to bottom. Give each a working name. Document:
-- Their visual order
-- Which are fixed/sticky overlays vs. flow content
-- The overall page layout (scroll container, column structure, z-index layers)
-- Dependencies between sections (e.g., a floating nav that overlays everything)
-- **The interaction model** of each section (static, click-driven, scroll-driven, time-driven)
-
-Save this as `docs/research/PAGE_TOPOLOGY.md` — it becomes your assembly blueprint.
-
-## Phase 2: Foundation Build
-
-This is sequential. Do it yourself (not delegated to an agent) since it touches many files:
-
-1. **Update fonts** in `layout.tsx` to match the target site's actual fonts
-2. **Update globals.css** with the target's color tokens, spacing values, keyframe animations, utility classes, and any **global scroll behaviors** (Lenis, smooth scroll CSS, scroll-snap on body)
-3. **Create TypeScript interfaces** in `src/types/` for the content structures you've observed
-4. **Extract SVG icons** — find all inline `<svg>` elements on the page, deduplicate them, and save as named React components in `src/components/icons.tsx`. Name them by visual function (e.g., `SearchIcon`, `ArrowRightIcon`, `LogoIcon`).
-5. **Download global assets** — write and run a Node.js script (`scripts/download-assets.mjs`) that downloads all images, videos, and other binary assets from the page to `public/`. Preserve meaningful directory structure.
-6. Verify: `npm run build` passes
-
-### Asset Discovery Script Pattern
-
-Use browser MCP to enumerate all assets on the page:
-
-```javascript
-// Run this via browser MCP to discover all assets
-JSON.stringify({
-  images: [...document.querySelectorAll('img')].map(img => ({
-    src: img.src || img.currentSrc,
-    alt: img.alt,
-    width: img.naturalWidth,
-    height: img.naturalHeight,
-    // Include parent info to detect layered compositions
-    parentClasses: img.parentElement?.className,
-    siblings: img.parentElement ? [...img.parentElement.querySelectorAll('img')].length : 0,
-    position: getComputedStyle(img).position,
-    zIndex: getComputedStyle(img).zIndex
-  })),
-  videos: [...document.querySelectorAll('video')].map(v => ({
-    src: v.src || v.querySelector('source')?.src,
-    poster: v.poster,
-    autoplay: v.autoplay,
-    loop: v.loop,
-    muted: v.muted
-  })),
-  backgroundImages: [...document.querySelectorAll('*')].filter(el => {
-    const bg = getComputedStyle(el).backgroundImage;
-    return bg && bg !== 'none';
-  }).map(el => ({
-    url: getComputedStyle(el).backgroundImage,
-    element: el.tagName + '.' + el.className?.split(' ')[0]
-  })),
-  svgCount: document.querySelectorAll('svg').length,
-  fonts: [...new Set([...document.querySelectorAll('*')].slice(0, 200).map(el => getComputedStyle(el).fontFamily))],
-  favicons: [...document.querySelectorAll('link[rel*="icon"]')].map(l => ({ href: l.href, sizes: l.sizes?.toString() }))
-});
-```
-
-Then write a download script that fetches everything to `public/`. Use batched parallel downloads (4 at a time) with proper error handling.
-
-## Phase 3: Component Specification & Dispatch
-
-This is the core loop. For each section in your page topology (top to bottom), you do THREE things: **extract**, **write the spec file**, then **dispatch builders**.
-
-### Step 1: Extract
-
-For each section, use browser MCP to extract everything:
-
-1. **Screenshot** the section in isolation (scroll to it, screenshot the viewport). Save to `docs/design-references/`.
-
-2. **Extract CSS** for every element in the section. Use the extraction script below — don't hand-measure individual properties. Run it once per component container and capture the full output:
-
-```javascript
-// Per-component extraction — run via browser MCP
-// Replace SELECTOR with the actual CSS selector for the component
-(function(selector) {
-  const el = document.querySelector(selector);
-  if (!el) return JSON.stringify({ error: 'Element not found: ' + selector });
-  const props = [
-    'fontSize','fontWeight','fontFamily','lineHeight','letterSpacing','color',
-    'textTransform','textDecoration','backgroundColor','background',
-    'padding','paddingTop','paddingRight','paddingBottom','paddingLeft',
-    'margin','marginTop','marginRight','marginBottom','marginLeft',
-    'width','height','maxWidth','minWidth','maxHeight','minHeight',
-    'display','flexDirection','justifyContent','alignItems','gap',
-    'gridTemplateColumns','gridTemplateRows',
-    'borderRadius','border','borderTop','borderBottom','borderLeft','borderRight',
-    'boxShadow','overflow','overflowX','overflowY',
-    'position','top','right','bottom','left','zIndex',
-    'opacity','transform','transition','cursor',
-    'objectFit','objectPosition','mixBlendMode','filter','backdropFilter',
-    'whiteSpace','textOverflow','WebkitLineClamp'
-  ];
-  function extractStyles(element) {
-    const cs = getComputedStyle(element);
-    const styles = {};
-    props.forEach(p => { const v = cs[p]; if (v && v !== 'none' && v !== 'normal' && v !== 'auto' && v !== '0px' && v !== 'rgba(0, 0, 0, 0)') styles[p] = v; });
-    return styles;
-  }
-  function walk(element, depth) {
-    if (depth > 4) return null;
-    const children = [...element.children];
-    return {
-      tag: element.tagName.toLowerCase(),
-      classes: element.className?.toString().split(' ').slice(0, 5).join(' '),
-      text: element.childNodes.length === 1 && element.childNodes[0].nodeType === 3 ? element.textContent.trim().slice(0, 200) : null,
-      styles: extractStyles(element),
-      images: element.tagName === 'IMG' ? { src: element.src, alt: element.alt, naturalWidth: element.naturalWidth, naturalHeight: element.naturalHeight } : null,
-      childCount: children.length,
-      children: children.slice(0, 20).map(c => walk(c, depth + 1)).filter(Boolean)
-    };
-  }
-  return JSON.stringify(walk(el, 0), null, 2);
-})('SELECTOR');
-```
-
-3. **Extract multi-state styles** — for any element with multiple states (scroll-triggered, hover, active tab), capture BOTH states:
-
-```javascript
-// State A: capture styles at current state (e.g., scroll position 0)
-// Then trigger the state change (scroll, click, hover via browser MCP)
-// State B: re-run the extraction script on the same element
-// The diff between A and B IS the behavior specification
-```
-
-Record the diff explicitly: "Property X changes from VALUE_A to VALUE_B, triggered by TRIGGER, with transition: TRANSITION_CSS."
-
-4. **Extract real content** — all text, alt attributes, aria labels, placeholder text. Use `element.textContent` for each text node. For tabbed/stateful content, **click each tab and extract content per state**.
-
-5. **Identify assets** this section uses — which downloaded images/videos from `public/`, which icon components from `icons.tsx`. Check for **layered images** (multiple `<img>` or background-images stacked in the same container).
-
-6. **Assess complexity** — how many distinct sub-components does this section contain? A distinct sub-component is an element with its own unique styling, structure, and behavior (e.g., a card, a nav item, a search panel).
-
-### Step 2: Write the Component Spec File
-
-For each section (or sub-component, if you're breaking it up), create a spec file in `docs/research/components/`. This is NOT optional — every builder must have a corresponding spec file.
-
-**File path:** `docs/research/components/<component-name>.spec.md`
-
-**Template:**
-
-```markdown
-# <ComponentName> Specification
-
-## Overview
-- **Target file:** `src/components/<ComponentName>.tsx`
-- **Screenshot:** `docs/design-references/<screenshot-name>.png`
-- **Interaction model:** <static | click-driven | scroll-driven | time-driven>
-
-## DOM Structure
-<Describe the element hierarchy — what contains what>
-
-## Computed Styles (exact values from getComputedStyle)
-
-### Container
-- display: ...
-- padding: ...
-- maxWidth: ...
-- (every relevant property with exact values)
-
-### <Child element 1>
-- fontSize: ...
-- color: ...
-- (every relevant property)
-
-### <Child element N>
-...
-
-## States & Behaviors
-
-### <Behavior name, e.g., "Scroll-triggered floating mode">
-- **Trigger:** <exact mechanism — scroll position 50px, IntersectionObserver rootMargin "-30% 0px", click on .tab-button, hover>
-- **State A (before):** maxWidth: 100vw, boxShadow: none, borderRadius: 0
-- **State B (after):** maxWidth: 1200px, boxShadow: 0 4px 20px rgba(0,0,0,0.1), borderRadius: 16px
-- **Transition:** transition: all 0.3s ease
-- **Implementation approach:** <CSS transition + scroll listener | IntersectionObserver | CSS animation-timeline | etc.>
-
-### Hover states
-- **<Element>:** <property>: <before> → <after>, transition: <value>
-
-## Per-State Content (if applicable)
-
-### State: "Featured"
-- Title: "..."
-- Subtitle: "..."
-- Cards: [{ title, description, image, link }, ...]
-
-### State: "Productivity"
-- Title: "..."
-- Cards: [...]
-
-## Assets
-- Background image: `public/images/<file>.webp`
-- Overlay image: `public/images/<file>.png`
-- Icons used: <ArrowIcon>, <SearchIcon> from icons.tsx
-
-## Text Content (verbatim)
-<All text content, copy-pasted from the live site>
-
-## Responsive Behavior
-- **Desktop (1440px):** <layout description>
-- **Tablet (768px):** <what changes — e.g., "maintains 2-column, gap reduces to 16px">
-- **Mobile (390px):** <what changes — e.g., "stacks to single column, images full-width">
-- **Breakpoint:** layout switches at ~<N>px
-```
-
-Fill every section. If a section doesn't apply (e.g., no states for a static footer), write "N/A" — but think twice before marking States & Behaviors as N/A. Even a footer might have hover states on links.
-
-### Step 3: Dispatch Builders
-
-Based on complexity, dispatch builder agent(s) in worktree(s):
-
-**Simple section** (1-2 sub-components): One builder agent gets the entire section.
-
-**Complex section** (3+ distinct sub-components): Break it up. One agent per sub-component, plus one agent for the section wrapper that imports them. Sub-component builders go first since the wrapper depends on them.
-
-**What every builder agent receives:**
-- The full contents of its component spec file (inline in the prompt — don't say "go read the spec file")
-- Path to the section screenshot in `docs/design-references/`
-- Which shared components to import (`icons.tsx`, `cn()`, shadcn primitives)
-- The target file path (e.g., `src/components/HeroSection.tsx`)
-- Instruction to verify with `npx tsc --noEmit` before finishing
-- For responsive behavior: the specific breakpoint values and what changes
-
-**Don't wait.** As soon as you've dispatched the builder(s) for one section, move to extracting the next section. Builders work in parallel in their worktrees while you continue extraction.
-
-### Step 4: Merge
-
-As builder agents complete their work:
-- Merge their worktree branches into main
-- You have full context on what each agent built, so resolve any conflicts intelligently
-- After each merge, verify the build still passes: `npm run build`
-- If a merge introduces type errors, fix them immediately
-
-The extract → spec → dispatch → merge cycle continues until all sections are built.
-
-## Phase 4: Page Assembly
-
-After all sections are built and merged, wire everything together in `src/app/page.tsx`:
-
-- Import all section components
-- Implement the page-level layout from your topology doc (scroll containers, column structures, sticky positioning, z-index layering)
-- Connect real content to component props
-- Implement page-level behaviors: scroll snap, scroll-driven animations, dark-to-light transitions, intersection observers, smooth scroll (Lenis etc.)
-- Verify: `npm run build` passes clean
-
-## Phase 5: Visual QA Diff
-
-After assembly, do NOT declare the clone complete. Take side-by-side comparison screenshots:
-
-1. Open the original site and your clone side-by-side (or take screenshots at the same viewport widths) using **Chrome MCP** on both if possible
-2. Compare section by section, top to bottom, at desktop (1440px)
-3. Compare again at mobile (390px)
-4. For each discrepancy found:
-   - Check the component spec file — was the value extracted correctly?
-   - If the spec was wrong: re-extract from browser MCP, update the spec, fix the component
-   - If the spec was right but the builder got it wrong: fix the component to match the spec
-5. Test all interactive behaviors: scroll through the page, click every button/tab, hover over interactive elements
-6. **Motion QA:** Re-run the **motion audit script** (or per-element `getAnimations`) on the reference and spot-check the clone in devtools — **durations, delays, and easing curves must match** (e.g. 320ms vs 300ms is a failure). Re-scroll hero and sticky headers; carousels and scroll-driven sections must trigger at the same thresholds documented in `BEHAVIORS.md`
-
-Only after this visual QA pass is the clone ready for **Phase 6 verification**. Immediately **confirm `docs/research/LAUNCHFRAME_SUBAGENTS.md`** contains four self-contained **`## Prompt — Pass N`** sections matching the Phase 6 rubrics; update that file whenever you change rubric wording locally.
-
-## Phase 6: Verification passes (mandatory)
-
-Foreman skim is insufficient — someone must execute **all four prompts in `LAUNCHFRAME_SUBAGENTS.md`** before you call Launchframe complete.
-
-### How to run them (hosts differ)
-
-| Host capability | What you must do |
-|-----------------|------------------|
-| **Parallel agents / Task / subagents** | Open **`docs/research/LAUNCHFRAME_SUBAGENTS.md`**. Dispatch **four** separate runs — each agent receives **exactly one** complete `## Prompt — Pass …` section copied **verbatim from that Markdown file**. Prefer **`explore`/readonly**. Do **not** paraphrase the rubric from chat memory. Claude Code-style teams: follow **`AGENTS.md`** — isolated **worktrees/branches per checker**, then merge after triage. |
-| **Single agent / no spawning** | Open the same Markdown file and **execute prompts 1 → 4 yourself** in order, appending **`docs/research/LAUNCHFRAME_VERIFICATION.md`** after each (`### Pass N`, findings, **`VERDICT: PASS`** or **`FAIL`**) per that file's **Output contract**. |
-
-**Do not** mark Launchframe done because verification “doesn’t apply” — it always applies. **Prompts live in Markdown** so runs are repeatable and auditable.
-
-**Minimum four verification passes** (four subagents **or** four self-executed steps — prompts sourced from **`LAUNCHFRAME_SUBAGENTS.md`;** the authoritative rubric text below must stay mirrored there):
-
-1. **Raster media & icons** — **Narrative slots:** inventory every reference marketing/lifestyle/card/hero image role from specs vs **committed files** (`public/images/...`) actually referenced in JSX; **`FAIL`** if the reference showed a photo/panel thumbnail and this clone relies on placeholders or bare gradients. Then list every raster/video poster and **every authored SVG/component used as an icon** from `src/`. Confirm **files exist** under `public/` with **correct paths** where expected; compare presentation to specs: **`picture`/`source` behavior**, **`sizes` / responsive behavior**, **`object-fit` / `object-position`**, dimensions/aspect-ratio, **parent overflow and radius**, **`background-image`** and **pseudo-elements**. For SVGs/icons: **`viewBox`**, strokes/fills/`currentColor`, and sprite usage must match specs — reject opportunistic Lucide substitutions unless the spec explicitly allowed them. Flag wrong crops, missing layers, or lazy `next/image` `fill` misuse.
-2. **HTML / DOM structure** — Diff **PAGE_TOPOLOGY.md** + component specs against the React tree: **section order**, **wrapper count**, **sibling order**, scroll/sticky containers. Any flattened structure that changes stacking or scroll must be **FAIL** until fixed.
-3. **CSS parity** — Spot-check **hero, nav, first fold, footer** (and any section flagged risky) against spec CSS: tokens in **`globals.css`**, arbitrary Tailwind vs measured px, **keyframes** presence. Run **`npm run lint`** and **`npm run typecheck`** inside the verification worktree; failures = **FAIL** until green.
-4. **Motion & interaction** — Re-walk **`docs/research/BEHAVIORS.md`** and motion audit JSON: headers, carousels, scroll-driven UI, smooth-scroll libs. Phase 5 motion QA must be **confirmed**, not assumed.
-
-Each pass (whether another agent or you) returns **`PASS` or `FAIL`**, a **bullet list** of issues with **`file:line`** pointers, and **suggested fixes**. The foreman **resolves or explicitly documents** every `FAIL` (deferred items listed in the completion report under **Known gaps**). **First rubric checklist includes:** confirm **every narrative image slot** from specs has **on-disk raster files** wired in JSX — **`FAIL`** if any slot is placeholder-only while the reference showed imagery. **Do not** declare Launchframe complete until all four passes **`PASS`** or gaps are accepted by the user context.
-
-## Pre-Dispatch Checklist
-
-Before dispatching ANY builder agent, verify you can check every box. If you can't, go back and extract more.
-
-- [ ] **Authored narrative rasters planned:** list each marketing/lifestyle/card image slot vs **planned `public/images/...` path** (Brand identity originals). No section ships with “TODO image” once built
-- [ ] **Image markup + styling** captured in spec: `picture`/`source`/`sizes`/`srcset` (or documented `next/image` mapping), `object-fit`/`object-position`, clipping parents, pseudo-element backgrounds if any
-- [ ] **Icon/SVG snippets** inlined in spec where needed: dominant paths or sprite `id`s, **`viewBox`**, stroke/fill rules — enough that a builder does not guess Lucide substitutions
-- [ ] **DOM outline** included for non-trivial sections (wrappers, order)
-- [ ] Spec file written to `docs/research/components/<name>.spec.md` with ALL sections filled
-- [ ] Every CSS value in the spec is from `getComputedStyle()`, not estimated
-- [ ] Interaction model is identified and documented (static / click / scroll / time)
-- [ ] For stateful components: every state's content and styles are captured
-- [ ] For scroll-driven components: trigger threshold, before/after styles, and transition are recorded
-- [ ] For hover states: before/after values and transition timing are recorded
-- [ ] **Motion audit JSON** from Chrome MCP is in `docs/research/BEHAVIORS.md` (`## Motion audit (Chrome MCP)`); follow-up passes exist for any capped/missed selectors
-- [ ] Relevant **`@keyframes`** from the reference appear in `globals.css` or module CSS **verbatim** (or equivalent WAAPI) — not hand-waved
-- [ ] Elements that move via **Web Animations API** have timing cross-checked with `getAnimations` output from Chrome MCP
-- [ ] All images in the section are identified (including overlays and layered compositions)
-- [ ] Responsive behavior is documented for at least desktop and mobile
-- [ ] Text content is verbatim from the site, not paraphrased
-- [ ] The builder prompt is under ~150 lines of spec; if over, the section needs to be split
-
-## What NOT to Do
-
-These are lessons from previous failed clones — each one cost hours of rework:
-
-- **Don't build click-based tabs when the original is scroll-driven (or vice versa).** Determine the interaction model FIRST by scrolling before clicking. This is the #1 most expensive mistake — it requires a complete rewrite, not a CSS fix.
-- **Don't extract only the default state.** If there are tabs showing "Featured" on load, click Productivity, Creative, Lifestyle and extract each one's cards/content. If the header changes on scroll, capture styles at position 0 AND position 100+.
-- **Don't miss overlay/layered images.** A background watercolor + foreground UI mockup = 2 images. Check every container's DOM tree for multiple `<img>` elements and positioned overlays.
-- **Don't build mockup components for content that's actually videos/animations.** Check if a section uses `<video>`, Lottie, or canvas before building elaborate HTML mockups of what the video shows.
-- **Don't approximate CSS classes.** "It looks like `text-lg`" is wrong if the computed value is `18px` and `text-lg` is `18px/28px` but the actual line-height is `24px`. Extract exact values.
-- **Don't build everything in one monolithic commit.** The whole point of this pipeline is incremental progress with verified builds at each step.
-- **Don't reference docs from builder prompts.** Each builder gets the CSS spec inline in its prompt — never "see DESIGN_TOKENS.md for colors." The builder should have zero need to read external docs.
-- **Don't skip asset extraction.** Without real images, videos, and fonts, the clone will always look fake regardless of how perfect the CSS is.
-- **Don't give a builder agent too much scope.** If you're writing a builder prompt and it's getting long because the section is complex, that's a signal to break it into smaller tasks.
-- **Don't bundle unrelated sections into one agent.** A CTA section and a footer are different components with different designs — don't hand them both to one agent and hope for the best.
-- **Don't skip responsive extraction.** If you only inspect at desktop width, the clone will break at tablet and mobile. Test at 1440, 768, and 390 during extraction.
-- **Don't forget smooth scroll libraries.** Check for Lenis (`.lenis` class), Locomotive Scroll, or similar. Default browser scrolling feels noticeably different and the user will spot it immediately.
-- **Don't collapse responsive image markup.** Dropping `<picture>` / `<source media="…">` or `sizes` so “one JPEG is enough” changes which URL loads and breaks fidelity — mirror the reference’s responsive strategy.
-- **Don't guess motion.** If `transition-duration` is 280ms with `cubic-bezier(0.4, 0, 0.2, 1)`, the clone must use those exact values from Chrome MCP — not "about 0.3s ease."
-- **Don't swap reference-specific SVG/UI icons for random Lucide** (or unrelated stock glyphs) unless the spec proves geometric equivalence — extract the DOM paths/sprites instead.
-- **Don't declare Launchframe finished without Phase 6.** Execute the four **`LAUNCHFRAME_SUBAGENTS.md`** prompts (via **Task**/subagents or yourself) and write **`LAUNCHFRAME_VERIFICATION.md`** with four **`PASS`**/**`FAIL`** verdicts — “subagents wouldn't start” is not an excuse to skip opening the Markdown runbook.
-- **Don't ship marketing image slots empty.** Narrative raster roles need real files under **`public/images/`** (or equivalent): no permanent gray boxes where the reference had photography.
-
-## Completion
+## Completion Report
 
 When done, report:
-- Total sections built
-- Total components created
-- Total spec files written (should match components)
-- Total assets downloaded (images, videos, SVGs, fonts)
-- **`public/images/` (and similar)** — explicit list of **authored narrative** raster files produced for Brand identity slots (paths + intent)
-- Build status (`npm run build` result)
-- Visual QA results (any remaining discrepancies)
-- **Phase 6 verification:** cite **`docs/research/LAUNCHFRAME_SUBAGENTS.md`** (prompt source) **`docs/research/LAUNCHFRAME_VERIFICATION.md`** (results), summarize four passes with **PASS/FAIL** each; unresolved items under **Known gaps**
-- Any known gaps or limitations
+
+- Target URL cloned
+- SaaS idea + chosen product name
+- Phase A: sections built, components created, assets downloaded, `npm run build` status
+- Phase B: files edited (count), `TODO:` markers left (count + locations), accent color change (if any), placeholder pages created
+- Final build status
+- Path to the rebrand brief (`docs/research/LAUNCHFRAME.md`)
+- Screenshots paths (before + after)
+- Any known gaps (illustrations to swap, OG image to design, favicon to swap, real testimonials to source)

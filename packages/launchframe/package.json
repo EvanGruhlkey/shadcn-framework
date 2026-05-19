@@ -1,0 +1,45 @@
+{
+  "name": "launchframe",
+  "version": "0.5.2",
+  "private": false,
+  "description": "AI-ready Next.js starter for turning any site into your SaaS landing page",
+  "author": "EvanGruhlkey",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "launchframe": "./bin/launchframe.mjs"
+  },
+  "files": [
+    "bin",
+    "template",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EvanGruhlkey/launchframe.git",
+    "directory": "packages/launchframe"
+  },
+  "homepage": "https://github.com/EvanGruhlkey/launchframe#readme",
+  "bugs": {
+    "url": "https://github.com/EvanGruhlkey/launchframe/issues"
+  },
+  "keywords": [
+    "launchframe",
+    "website-clone",
+    "reverse-engineering",
+    "nextjs",
+    "ai",
+    "claude-code",
+    "cursor",
+    "scaffold",
+    "tailwindcss",
+    "shadcn-ui"
+  ],
+  "scripts": {
+    "prepare:template": "node ../../scripts/prepare-launchframe-template.mjs",
+    "prepublishOnly": "npm run prepare:template"
+  }
+}

@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import {
-  LAUNCHFRAME_SAAS_IDEA,
-  LAUNCHFRAME_SOURCE_URL,
-} from "@/lib/launchframe-config";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,18 +13,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-function pickMetaTitle(idea: string): string {
-  const line = idea.trim().split(/\r?\n/)[0]?.trim() ?? idea.trim();
-  return line.slice(0, 70) || "Launchframe";
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  const title = pickMetaTitle(LAUNCHFRAME_SAAS_IDEA);
-  return {
-    title,
-    description: `Landing positioning: ${LAUNCHFRAME_SAAS_IDEA.slice(0, 140)} Visual reference: ${LAUNCHFRAME_SOURCE_URL}`,
-  };
-}
+export const metadata: Metadata = {
+  title: "Launchframe",
+  description: "Clone any website into a clean Next.js codebase with AI agents",
+};
 
 export default function RootLayout({
   children,

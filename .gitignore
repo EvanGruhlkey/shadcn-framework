@@ -47,3 +47,6 @@ next-env.d.ts
 
 # Local temp files
 temp/
+
+# Generated npm package template bundle
+packages/launchframe/template/

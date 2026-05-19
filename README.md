@@ -1,38 +1,27 @@
 # Launchframe
 
-Next.js + shadcn/ui + Tailwind v4 template for cloning a reference site and layering your SaaS pitch—wired for AI agents. Project rules for agents: **`AGENTS.md`**. In Cursor (and similar), use the **`/launchframe`** command with a URL and your pitch in quotes.
+AI-ready Next.js starter for turning any site into your SaaS landing page.
 
-Requires **Node.js 24+**.
+`npx launchframe` scaffolds a Next.js + shadcn/ui project with agent instructions and the `/launchframe` slash command for Cursor, Claude Code, Copilot, and others. Point it at a site you like and describe your product — your agent inspects the page in the browser, rebuilds the layout in React, then swaps in your name, copy, and branding.
 
 ## Quick start
 
-**You already have this repo**
-
 ```bash
-npm install
-npm run dev
+npx launchframe@0.5.2 my-app
+cd my-app
 ```
 
-**New folder**
+Open the project in your AI agent and run:
 
-```bash
-mkdir my-app && cd my-app
-npx launchframe@latest
+```
+/launchframe https://example.com "Your SaaS idea"
 ```
 
-That unpacks the template and runs `npm install` unless you pass `--skip-install`. Defaults live in **`src/lib/launchframe-config.ts`** (optional: `LAUNCHFRAME_SOURCE_URL` and `LAUNCHFRAME_SAAS_IDEA` in the environment when you scaffold).
+## Requirements
 
-## Scripts
+- [Node.js](https://nodejs.org/) 24+
+- An AI coding agent
 
-| Command | What it does |
-| -------- | ------------- |
-| `npm run dev` | Dev server |
-| `npm run build` | Production build |
-| `npm run start` | Run production build |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | TypeScript |
-| `npm run check` | Lint, typecheck, then build |
-
-Took inspiration from [JCodesMore/ai-website-cloner-template](https://github.com/JCodesMore/ai-website-cloner-template).
+## License
 
 MIT

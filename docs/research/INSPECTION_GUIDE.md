@@ -4,16 +4,6 @@
 
 This guide outlines what to capture when inspecting a target website via Chrome MCP or browser DevTools.
 
-## Priority: media, SVGs, and motion (do this early)
-
-When crawling the DOM and network, **tackle these before fine-tuning copy or spacing**:
-
-1. **Raster imagery** — Every `<img>`, `<picture>` / `source`, `srcset` / `sizes`, CDN URLs, lazy-loaded `data-src`, `loading="lazy"` nodes, **CSS `background-image`** on the element and ancestors (including `::before` / `::after`), masks that use `url()`, `<video>` still / poster frames. Prefer **downloading** originals via scripts or MCP; if a URL is blocked or session-gated, **export a screenshot** of the element’s bounding box at a crisp DPR and store it under `public/images/`, and note the substitute in the spec.
-2. **SVGs** — Inline `<svg>`, `<use>` / sprite sheets, **SVG in CSS** (`mask-image`, `background-image`), favicons as SVG, logo marks. Prefer extracting path/viewBox into React components or static files under `public/` — **recreate** from a screenshot/trace only when the markup is obfuscated or blocked.
-3. **Motion & animation** — Inspect Styles for `animation`, `animation-name`, `animation-timeline`, `transition`, `transform`, `@keyframes`; check for libraries (Framer Motion, GSAP, Lottie, Lenis). Capture **durations, easings, delays, fill-modes**, scroll/view triggers, and `prefers-reduced-motion` handling. Motion often defines perceived quality — do not leave it as an afterthought.
-
-Then continue with typography, spacing, and component structure as usual.
-
 ## Phase 1: Visual Audit
 
 ### Screenshots to Capture

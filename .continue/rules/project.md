@@ -2,7 +2,7 @@
      Run `bash scripts/sync-agent-rules.sh` to regenerate. -->
 
 ---
-description: Project conventions for AI Website Clone Template
+description: Project conventions for Launchframe
 alwaysApply: true
 ---
 <!-- BEGIN:nextjs-agent-rules -->
@@ -11,17 +11,35 @@ alwaysApply: true
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
-# Website Reverse-Engineer Template
+# Launchframe
 
 ## What This Is
-A reusable template for reverse-engineering any website into a clean, modern Next.js codebase using AI coding agents. The Next.js + shadcn/ui + Tailwind v4 base is pre-scaffolded — use **`/launchframe <url> "saas idea"`** for the full pixel-perfect clone plus SaaS landing copy (`src/lib/launchframe-config.ts`, `launchframe.context.json`, `docs/research/LAUNCHFRAME.md`). For a **new empty folder** only, **`npx launchframe@latest`** unpacks this template; then run **`/launchframe`** in that project with your URL and pitch.
+Launchframe is a reusable template for reverse-engineering any website into a clean, modern Next.js codebase using AI coding agents. The Next.js + shadcn/ui + Tailwind v4 base is pre-scaffolded — just run `/clone-website <url1> [<url2> ...]`.
 
 ## Tech Stack
 - **Framework:** Next.js 16 (App Router, React 19, TypeScript strict)
 - **UI:** shadcn/ui (Radix primitives, Tailwind CSS v4, `cn()` utility)
-- **Icons:** Lucide ships as a default only — **`/launchframe` clones must lift reference SVG sprites/paths/masks first** so UI icons match the source; Lucide fills gaps only where documented equivalent
+- **Icons:** Lucide React (default — supplemented by extracted SVGs in `src/components/icons.tsx`)
 - **Styling:** Tailwind CSS v4 with oklch design tokens
+- **Motion (install on demand, match the target):**
+  - `motion` — successor to `framer-motion`. Default animation library. `import { motion, AnimatePresence } from "motion/react"`.
+  - `lenis` — for smooth scroll, only if the target uses it.
+  - `lottie-react` — for Bodymovin JSON animations detected in the target.
+  - `react-typewriter-text` / `@char-motion/react` — for typewriter, terminal, and ASCII / scramble animations (Linear, Vercel, Anthropic-style "agent typing" effects).
+  - `react-fast-marquee` — for infinite logo/testimonial strips, only if needed.
+  - `@splinetool/react-spline`, `three` / `@react-three/fiber`, `@rive-app/react-canvas` — only when the target actually ships Spline / WebGL / Rive.
+- **Media:**
+  - Images → `public/images/` (Next `<Image>` with explicit width/height)
+  - Videos → `public/videos/` with posters in `public/images/` (mirror `autoplay muted playsInline loop preload` from the source)
+  - Lottie → `public/lottie/`
+  - Favicons / OG → `public/seo/`
 - **Deployment:** Vercel
+
+## Motion Rules
+- Components that use `motion`, `useScroll`, `useEffect`, `useState`, or any browser API MUST start with `"use client"`.
+- Match the target's exact `duration`, `ease`, `delay`, and `stagger` — write them in spec files, not "feels about right".
+- Always provide a `prefers-reduced-motion: reduce` fallback (opacity-only fade or instant snap).
+- Never strip animations during rebrand (see `/launchframe`); swap content, keep motion.
 
 ## Commands
 - `npm run dev` — Start dev server
@@ -40,9 +58,8 @@ A reusable template for reverse-engineering any website into a clean, modern Nex
 ## Design Principles
 - **Pixel-perfect emulation** — match the target's spacing, colors, typography exactly
 - **No personal aesthetic changes during emulation phase** — match 1:1 first, customize later
-- **Real content** — use actual text and assets from the target site where they are interchangeable chrome; **`/launchframe`** overlays your SaaS pitch on headings and CTAs. **Marketing photographs and illustrative hero/feature imagery are not photocopied**: you **must** ship **committed files** under `public/images/` (etc.) for every such slot — **generate them yourself** with your host **image-generation** tool (prompts tied to the SaaS idea), wire into components, supplement with UI mock composites only if helpful. Blank placeholders count as unfinished. Record paths in `docs/research/LAUNCHFRAME.md`
+- **Real content** — use actual text and assets from the target site, not placeholders
 - **Beauty-first** — every pixel matters
-- **DOM crawl priority** — when walking the target page, emphasize **images** (raster, responsive sources, CSS backgrounds), **SVGs** (inline icons, sprites, masks — **copy extracted geometry**, do not approximate with unrelated Lucide glyphs), then **motion** (**copy** `@keyframes`, `transition`/`animation` timings, scroll triggers, carousel staggers via Chrome MCP / CSS sources). **Measure and mirror** mounting and styling from the DOM; scrape **permission-neutral** bytes when appropriate. When a raster slot must be original for brand safety, **author** replacements and label them in research notes — **that never waives SVG or animation fidelity**
 
 ## Project Structure
 ```
@@ -67,25 +84,14 @@ scripts/            # Asset download scripts
 
 ## MOST IMPORTANT NOTES
 - When launching Claude Code agent teams, ALWAYS have each teammate work in their own worktree branch and merge everyone's work at the end, resolving any merge conflicts smartly since you are basically serving the orchestrator role and have full context to our goals, work given, work achieved, and desired outcomes.
-- **`/launchframe` Phase 6 verification** must always run: prompt text lives in **`docs/research/LAUNCHFRAME_SUBAGENTS.md`**; results in **`docs/research/LAUNCHFRAME_VERIFICATION.md`**. Use four parallel **Task**/subagents (paste one `## Prompt — Pass …` section per agent) or run all four sequentially yourself — never skip verification.
 - After editing `AGENTS.md`, run `bash scripts/sync-agent-rules.sh` to regenerate platform-specific instruction files.
-- After editing **any** `SKILL.md` under `.claude/skills/<skill-id>/`, run `node scripts/sync-skills.mjs` to regenerate that skill’s slash commands/workflows for **every supported platform** (discovered automatically).
+- After editing ANY `.claude/skills/<skill-name>/SKILL.md` (e.g. `clone-website`, `launchframe`), run `node scripts/sync-skills.mjs` to regenerate the skill for all platforms. The script auto-discovers every skill under `.claude/skills/`.
 
 # Website Inspection Guide
 
 ## How to Reverse-Engineer Any Website
 
 This guide outlines what to capture when inspecting a target website via Chrome MCP or browser DevTools.
-
-## Priority: media, SVGs, and motion (do this early)
-
-When crawling the DOM and network, **tackle these before fine-tuning copy or spacing**:
-
-1. **Raster imagery** — Every `<img>`, `<picture>` / `source`, `srcset` / `sizes`, CDN URLs, lazy-loaded `data-src`, `loading="lazy"` nodes, **CSS `background-image`** on the element and ancestors (including `::before` / `::after`), masks that use `url()`, `<video>` still / poster frames. Prefer **downloading** originals via scripts or MCP; if a URL is blocked or session-gated, **export a screenshot** of the element’s bounding box at a crisp DPR and store it under `public/images/`, and note the substitute in the spec.
-2. **SVGs** — Inline `<svg>`, `<use>` / sprite sheets, **SVG in CSS** (`mask-image`, `background-image`), favicons as SVG, logo marks. Prefer extracting path/viewBox into React components or static files under `public/` — **recreate** from a screenshot/trace only when the markup is obfuscated or blocked.
-3. **Motion & animation** — Inspect Styles for `animation`, `animation-name`, `animation-timeline`, `transition`, `transform`, `@keyframes`; check for libraries (Framer Motion, GSAP, Lottie, Lenis). Capture **durations, easings, delays, fill-modes**, scroll/view triggers, and `prefers-reduced-motion` handling. Motion often defines perceived quality — do not leave it as an afterthought.
-
-Then continue with typography, spacing, and component structure as usual.
 
 ## Phase 1: Visual Audit
 
